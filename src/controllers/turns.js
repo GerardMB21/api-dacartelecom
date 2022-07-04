@@ -1,16 +1,9 @@
-const { Status } = require("../models/SQL/status");
 const { Turns } = require("../models/SQL/turns");
 const { catchAsync } = require("../utils/catchAsync");
 
 const getItems = catchAsync(async (req,res,next)=>{
     const data = await Turns.findAll({
-        attributes:['id','name','entrance_time','exit_time','createdAt','updatedAt'],
-        include:[
-            {
-                model:Status,
-                attributes:['name']
-            }
-        ]
+        attributes:['id','name','entrance_time','exit_time','createdAt','updatedAt']
     });
 
     res.status(200).json({
@@ -28,8 +21,7 @@ const createItem = catchAsync(async (req,res,next)=>{
     const newTurn = await Turns.create({
         name,
         entrance_time,
-        exit_time,
-        statusId:1
+        exit_time
     })
     
     res.status(201).json({

@@ -1,16 +1,9 @@
 const { Campaigns } = require("../models/SQL/campaigns");
-const { Status } = require("../models/SQL/status");
 const { catchAsync } = require("../utils/catchAsync");
 
 const getItems = catchAsync(async (req,res,next)=>{
     const data = await Campaigns.findAll({
-        attributes:['id','name','createdAt','updatedAt'],
-        include: [
-            {
-                model:Status,
-                attributes:['name']
-            }
-        ]
+        attributes:['id','name','createdAt','updatedAt']
     });
 
     res.status(200).json({
@@ -26,8 +19,7 @@ const getItem = (req,res)=>{
 const createItem = catchAsync(async (req,res,next)=>{
     const { name } = req.body;
     const newCampaign = await Campaigns.create({
-        name,
-        statusId:1
+        name
     })
     
     res.status(201).json({

@@ -18,43 +18,26 @@ const Storage = dbConnect.define('storage', {
     },
     file_name: {
         type: DataTypes.STRING,
-        allowNull: false,
-        validate:{
-            isAlpha:true,
-            isAlphanumeric:true
-        }
+        allowNull: false
     },
     dir_name: {
         type: DataTypes.STRING,
-        allowNull: false,
-        validate:{
-            isAlpha:true,
-            isAlphanumeric:true
-        }
+        allowNull: false
     },
     permission: {
         type: DataTypes.INTEGER,
-        allowNull: true,
-        validate:{
-            isNumeric:true
-        }
+        allowNull: true
     },
     userId: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        select:false,
-        validate:{
-            isNumeric:true
-        }
+        select:false
     },
-    statusId: {
-        type: DataTypes.INTEGER,
+    status: {
+        type: DataTypes.BOOLEAN,
         allowNull: false,
         select:false,
-        validate:{
-            isNumeric:true
-        },
-        defaultValue: 1
+        defaultValue: true
     }
 });
 

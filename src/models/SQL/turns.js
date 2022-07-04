@@ -11,10 +11,7 @@ const Turns = dbConnect.define('turn', {
     },
     name: {
         type: DataTypes.STRING,
-        allowNull: false,
-        validate:{
-            isAlpha:true
-        }
+        allowNull: false
     },
     entrance_time: {
         type: DataTypes.TIME,
@@ -24,14 +21,11 @@ const Turns = dbConnect.define('turn', {
         type: DataTypes.TIME,
         allowNull: false
     },
-    statusId: {
-        type: DataTypes.INTEGER,
+    status: {
+        type: DataTypes.BOOLEAN,
         allowNull: false,
         select:false,
-        validate:{
-            isNumeric:true
-        },
-        defaultValue:1
+        defaultValue: true
     }
 });
 

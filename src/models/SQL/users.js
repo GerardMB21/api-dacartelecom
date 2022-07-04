@@ -12,10 +12,7 @@ const Users = dbConnect.define('users', {
     email: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true,
-        validate:{
-            isEmail:true
-        }
+        unique: true
     },
     password: {
         type: DataTypes.STRING,
@@ -23,65 +20,41 @@ const Users = dbConnect.define('users', {
     },
     name: {
         type: DataTypes.STRING,
-        allowNull: false,
-        validate:{
-            isAlpha:true
-        }
+        allowNull: false
     },
     last_name: {
         type: DataTypes.STRING,
-        allowNull: false,
-        validate:{
-            isAlpha:true
-        }
+        allowNull: false
     },
-    img_code: {
+    img_profile: {
         type: DataTypes.INTEGER,
-        allowNull: true,
-        validate:{
-            isNumeric:true
-        }
+        allowNull: true
     },
     roleId: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        select:false,
-        validate:{
-            isNumeric:true
-        }
+        select:false
     },
     campaignId: {
         type: DataTypes.INTEGER,
         allowNull: true,
-        select:false,
-        validate:{
-            isNumeric:true
-        }
+        select:false
     },
     sectionId: {
         type: DataTypes.INTEGER,
         allowNull: true,
-        select:false,
-        validate:{
-            isNumeric:true
-        }
+        select:false
     },
     turnId: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        select:false,
-        validate:{
-            isNumeric:true
-        }
+        select:false
     },
-    statusId: {
-        type: DataTypes.INTEGER,
+    status: {
+        type: DataTypes.BOOLEAN,
         allowNull: false,
         select:false,
-        validate:{
-            isNumeric:true
-        },
-        defaultValue: 1
+        defaultValue: true
     }
 });
 

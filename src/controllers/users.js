@@ -1,18 +1,27 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
+//models
 const { Campaigns } = require("../models/SQL/campaigns");
 const { Roles } = require("../models/SQL/roles");
 const { Sections } = require("../models/SQL/sections");
-const { Status } = require("../models/SQL/status");
 const { Turns } = require("../models/SQL/turns");
 const { Users } = require("../models/SQL/users");
+
+//utils
 const { AppError } = require('../utils/appError');
 const { catchAsync } = require('../utils/catchAsync');
 
 const getItems = catchAsync(async (req,res,next)=>{
+
+    const { permission } = req;
+
+    if (!permission) {
+        return next(new AppError('You dont have permission',401));
+    };
+
     const data = await Users.findAll({
-        attributes:['id','email','name','last_name','img_code','createdAt','updatedAt'],
+        attributes:['id','email','name','last_name','img_profile','status','createdAt','updatedAt'],
         include:[
             {
                 model:Roles,
@@ -29,10 +38,6 @@ const getItems = catchAsync(async (req,res,next)=>{
             {
                 model:Turns,
                 attributes:['name']
-            },
-            {
-                model:Status,
-                attributes:['name']
             }
         ]
     });
@@ -41,11 +46,18 @@ const getItems = catchAsync(async (req,res,next)=>{
         status: 'succes',
         data
     });
-})
+});
 
-const getItem = (req,res)=>{
+const getItem = catchAsync(async (req,res,next)=>{
+    const { user } = req
+    
+    user.password = undefined
 
-}
+    res.status(200).json({
+        status: 'succes',
+        user
+    });
+});
 
 const createItem = catchAsync(async (req,res,next)=>{
     const { 
@@ -53,6 +65,7 @@ const createItem = catchAsync(async (req,res,next)=>{
         password,
         name,
         last_name,
+        img_profile,
         roleId,
         campaignId,
         sectionId,
@@ -67,11 +80,11 @@ const createItem = catchAsync(async (req,res,next)=>{
         password: encryptPass,
         name,
         last_name,
+        img_profile,
         roleId,
         campaignId,
         sectionId,
-        turnId,
-        statusId:1
+        turnId
     })
 
 	newUser.password = undefined
@@ -80,7 +93,7 @@ const createItem = catchAsync(async (req,res,next)=>{
         status: 'succes',
         newUser
     })
-})
+});
 
 const loginItem = catchAsync(async (req,res,next)=>{
 	const { email, password } = req.body;
@@ -88,7 +101,7 @@ const loginItem = catchAsync(async (req,res,next)=>{
 	const user = await Users.findOne({
 		where:{ 
 			email,
-			statusId:1 
+			status:true 
 		}
 	});
 
@@ -99,7 +112,7 @@ const loginItem = catchAsync(async (req,res,next)=>{
 	const validPass = await bcrypt.compare(password,user.password);
 
 	if (!validPass) {
-		next(new AppError('Invalid password',404));
+		return next(new AppError('Invalid password',404));
 	};
 
 	const token = jwt.sign({ 
@@ -108,22 +121,77 @@ const loginItem = catchAsync(async (req,res,next)=>{
         campaign:user.campaignId,
         section:user.sectionId
      }, process.env.JWT_SIGN, { 
-		expiresIn: '5m',
+		expiresIn: '24h',
 	 });
 
 	res.status(200).json({
 		status:'succes',
 		token
 	});
+});
+
+const updateItem = catchAsync(async (req,res,next)=>{
+    const { user } = req
+    const { name, last_name, last_password, password } = req.body
+    
+	const validPass = await bcrypt.compare(last_password,user.password);
+
+	if (!validPass) {
+		return next(new AppError('Invalid password',404));
+	};
+
+	const salt = await bcrypt.genSalt(12);
+	const encryptPass = await bcrypt.hash(password,salt);
+
+    await user.update({ 
+        name,
+        last_name,
+        password: encryptPass,
+     })
+
+     res.status(201).json({ status: 'success' });
+});
+
+const deleteItem = catchAsync(async (req,res,next)=>{
+    const { user } = req
+
+    await user.update({ 
+        status:false
+     })
+
+     res.status(201).json({ status: 'success' });
+});
+
+const searchRole = catchAsync(async (req,res,next)=>{
+    const { users } = req
+
+    users.map(user=>{
+        user.password = undefined
+    })
+    
+    res.status(200).json({
+        status: 'succes',
+        users
+    });
+});
+
+const searchCampaign = catchAsync(async (req,res,next)=>{
+    const { users } = req;
+
+    res.status(200).json({
+        status: 'succes',
+        users
+    });
 })
 
-const updateItem = (req,res)=>{
+const searchSection = catchAsync(async (req,res,next)=>{
+    const { users } = req;
 
-}
-
-const deleteItem = (req,res)=>{
-
-}
+    res.status(200).json({
+        status: 'succes',
+        users
+    });
+})
 
 module.exports = {
     getItems,
@@ -131,5 +199,8 @@ module.exports = {
     createItem,
     updateItem,
     deleteItem,
-    loginItem
+    loginItem,
+    searchRole,
+    searchCampaign,
+    searchSection
 }

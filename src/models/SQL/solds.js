@@ -63,14 +63,11 @@ const Solds = dbConnect.define('solds', {
             isNumeric:true
         }
     },
-    statusId: {
-        type: DataTypes.INTEGER,
+    status: {
+        type: DataTypes.BOOLEAN,
         allowNull: false,
         select:false,
-        validate:{
-            isNumeric:true
-        },
-        defaultValue:1
+        defaultValue: true
     }
 });
 

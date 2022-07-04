@@ -1,16 +1,12 @@
 const { Roles } = require('../models/SQL/roles');
-const { Status } = require('../models/SQL/status');
 const { catchAsync } = require('../utils/catchAsync');
 
 const getItems = catchAsync(async (req,res,next)=>{
     const data = await Roles.findAll({
-        attributes:['id','name','createdAt','updatedAt'],
-        include:[
-            {
-                model:Status,
-                attributes:['name']
-            }
-        ]
+        where:{
+            status:true
+        },
+        attributes:['id','name','createdAt','updatedAt']
     });
 
     res.status(200).json({
@@ -19,9 +15,14 @@ const getItems = catchAsync(async (req,res,next)=>{
     });
 })
 
-const getItem = (req,res)=>{
+const getItem = catchAsync(async (req,res,next)=>{
+    const { role } = req;
 
-}
+    res.status(200).json({
+        status: 'succes',
+        role
+    })
+})
 
 const createItem = catchAsync(async (req,res,next)=>{
     const { name } = req.body;
@@ -30,19 +31,36 @@ const createItem = catchAsync(async (req,res,next)=>{
         statusId:1
     })
 
-    res.status(201).json({
+    res.status(200).json({
         status: 'succes',
         roles
     })
 })
 
-const updateItem = (req,res)=>{
+const updateItem = catchAsync(async (req,res,next)=>{
+    const { role } = req;
+    const { name } = req.body;
 
-}
+    await role.update({
+        name
+    })
 
-const deleteItem = (req,res)=>{
+    res.status(200).json({
+        status: 'succes'
+    })
+})
 
-}
+const deleteItem = catchAsync(async (req,res,next)=>{
+    const { role } = req;
+
+    await role.update({
+        status:false
+    })
+
+    res.status(200).json({
+        status: 'succes'
+    })
+})
 
 module.exports = {
     getItems,

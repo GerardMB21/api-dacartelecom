@@ -12,18 +12,13 @@ const Roles = dbConnect.define('roles', {
     name: {
         type: DataTypes.STRING,
         allowNull: false,
-        validate:{
-            isAlpha:true
-        }
+        unique:true
     },
-    statusId: {
-        type: DataTypes.INTEGER,
+    status: {
+        type: DataTypes.BOOLEAN,
         allowNull: false,
         select:false,
-        validate:{
-            isNumeric:true
-        },
-        defaultValue:1
+        defaultValue: true
     }
 });
 

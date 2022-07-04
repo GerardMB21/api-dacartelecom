@@ -11,27 +11,18 @@ const Sections = dbConnect.define('section', {
     },
     name: {
         type: DataTypes.STRING,
-        allowNull: false,
-        validate:{
-            isAlpha:true
-        }
+        allowNull: false
     },
     campaignId: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        select:false,
-        validate:{
-            isNumeric:true
-        }
+        select:false
     },
-    statusId: {
-        type: DataTypes.INTEGER,
+    status: {
+        type: DataTypes.BOOLEAN,
         allowNull: false,
         select:false,
-        validate:{
-            isNumeric:true
-        },
-        defaultValue:1
+        defaultValue: true
     }
 });
 

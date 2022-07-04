@@ -10,7 +10,6 @@ const { productsRouter } = require('./routes/products.routes');
 const { rolesRouter } = require('./routes/roles.routes');
 const { sectionsRouter } = require('./routes/sections.routes');
 const { soldsRouter } = require('./routes/solds.routes');
-const { statusRouter } = require('./routes/status.routes');
 const { storageRouter } = require('./routes/storage.routes');
 const { turnsRouter } = require('./routes/turns.routes');
 const { usersRouter } = require('./routes/users.routes');
@@ -32,7 +31,6 @@ app.use("/api/v1/products", productsRouter);
 app.use("/api/v1/roles", rolesRouter);
 app.use("/api/v1/sections", sectionsRouter);
 app.use("/api/v1/solds", soldsRouter);
-app.use("/api/v1/status", statusRouter);
 app.use("/api/v1/storage", storageRouter);
 app.use("/api/v1/turns", turnsRouter);
 app.use("/api/v1/users", usersRouter)

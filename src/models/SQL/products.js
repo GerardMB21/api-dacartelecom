@@ -11,35 +11,23 @@ const Products = dbConnect.define('product', {
     },
     name: {
         type: DataTypes.STRING,
-        allowNull: false,
-        validate:{
-            isAlpha:true
-        }
+        allowNull: false
     },
     campaignId: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        select:false,
-        validate:{
-            isNumeric:true
-        }
+        select:false
     },
     sectionId: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        select:false,
-        validate:{
-            isNumeric:true
-        }
+        select:false
     },
-    statusId: {
-        type: DataTypes.INTEGER,
+    status: {
+        type: DataTypes.BOOLEAN,
         allowNull: false,
         select:false,
-        validate:{
-            isNumeric:true
-        },
-        defaultValue:1
+        defaultValue: true
     }
 });
 
