@@ -16,7 +16,7 @@ const { rolesValidator } = require('../validators/roles');
 const rolesRouter = express.Router();
 
 // htttp://localhost:port/api/v1/roles GET,POST,DELET,PUT
-rolesRouter.get("/", tokenVerify,getItems);
+rolesRouter.get("/", roleVerify, tokenVerify,getItems);
 rolesRouter.post("/", rolesValidator, roleVerify, tokenVerify, rolePermission,createItem);
 
 //params

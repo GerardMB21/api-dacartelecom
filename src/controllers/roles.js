@@ -2,12 +2,20 @@ const { Roles } = require('../models/SQL/roles');
 const { catchAsync } = require('../utils/catchAsync');
 
 const getItems = catchAsync(async (req,res,next)=>{
-    const data = await Roles.findAll({
+    const { permission } = req
+
+    let data = await Roles.findAll({
         where:{
             status:true
         },
         attributes:['id','name','createdAt','updatedAt']
     });
+
+    if (permission) {
+        data = await Roles.findAll({
+            attributes:['id','name','status','createdAt','updatedAt']
+        });
+    }
 
     res.status(200).json({
         status: 'succes',
