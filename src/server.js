@@ -13,6 +13,7 @@ const { Solds } = require('./models/SQL/solds');
 const { Storage } = require('./models/SQL/storage');
 const { Turns } = require('./models/SQL/turns');
 const { Users } = require('./models/SQL/users');
+const { Data } = require('./models/SQL/data');
 
 //conecction database
 const { dbConnect } = require('./config/database');
@@ -33,14 +34,15 @@ dbConnect.authenticate()
     Campaigns.hasMany(Advisers,{ foreignKey:'campaignId' });
     Sections.hasMany(Advisers,{ foreignKey:'sectionId' });
     Turns.hasMany(Advisers,{ foreignKey:'turnId' });
-    //campaigns realtions
     //imvestments relations
     Campaigns.hasMany(Investments,{ foreignKey:'campaignId' });
     Sections.hasMany(Investments,{ foreignKey:'sectionId' });
+    Users.hasMany(Investments,{ foreignKey:'userId' });
     //products relations
     Campaigns.hasMany(Products,{ foreignKey:'campaignId' });
     Sections.hasMany(Products,{ foreignKey:'sectionId' });
-    //roles relations
+    //data relations
+    Roles.hasMany(Data,{ foreignKey:'roleId' });
     //sections relations
     Campaigns.hasMany(Sections,{ foreignKey:'campaignId' });
     //solds relations
@@ -49,9 +51,10 @@ dbConnect.authenticate()
     Campaigns.hasMany(Solds,{ foreignKey:'campaignId' });
     Sections.hasMany(Solds,{ foreignKey:'sectionId' });
     Products.hasMany(Solds,{ foreignKey:'productId' });
+    //data relations
+    Users.hasMany(Data,{ foreignKey:'userId' });
     //storage relations
-    Users.hasMany(Storage,{ foreignKey:'userId' });
-    //turn relations
+    Data.hasMany(Storage,{ foreignKey:'dataId' })
 
 
     //user relations
@@ -64,14 +67,15 @@ dbConnect.authenticate()
     Advisers.belongsTo(Campaigns);
     Advisers.belongsTo(Sections);
     Advisers.belongsTo(Turns);
-    //campaign relations
     //invesments realtions
     Investments.belongsTo(Campaigns);
     Investments.belongsTo(Sections);
+    Investments.belongsTo(Users);
     //products relations
     Products.belongsTo(Campaigns);
     Products.belongsTo(Sections);
-    //roles relations
+    //data relations
+    Data.belongsTo(Roles);
     //section relations
     Sections.belongsTo(Campaigns);
     //solds relations
@@ -81,8 +85,7 @@ dbConnect.authenticate()
     Solds.belongsTo(Sections);
     Solds.belongsTo(Products);
     //storage relations
-    Storage.belongsTo(Users);
-    //turn relations
+    Storage.belongsTo(Data);
 
 dbConnect.sync()
 	.then(() => console.log('Db synced'))

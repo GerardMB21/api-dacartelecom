@@ -11,62 +11,35 @@ const Solds = dbConnect.define('solds', {
     },
     sold: {
         type: DataTypes.INTEGER,
-        allowNull: false,
-        validate:{
-            isNumeric:true
-        }
+        allowNull: false
     },
     day_time: {
         type: DataTypes.DATE,
-        allowNull: false,
-        validate:{
-            isDate:true
-        }
+        allowNull: false
     },
     adviserId: {
         type: DataTypes.INTEGER,
-        allowNull: false,
-        select:false,
-        validate:{
-            isNumeric:true
-        }
+        allowNull: false
     },
     userId: {
         type: DataTypes.INTEGER,
-        allowNull: false,
-        select:false,
-        validate:{
-            isNumeric:true
-        }
+        allowNull: false
     },
     campaignId: {
         type: DataTypes.INTEGER,
-        allowNull: false,
-        select:false,
-        validate:{
-            isNumeric:true
-        }
+        allowNull: false
     },
     sectionId: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        select:false,
-        validate:{
-            isNumeric:true
-        }
     },
     productId: {
         type: DataTypes.INTEGER,
-        allowNull: false,
-        select:false,
-        validate:{
-            isNumeric:true
-        }
+        allowNull: false
     },
     status: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
-        select:false,
         defaultValue: true
     }
 });

@@ -2,24 +2,26 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 //models
-const { Campaigns } = require("../models/SQL/campaigns");
-const { Roles } = require("../models/SQL/roles");
-const { Sections } = require("../models/SQL/sections");
-const { Turns } = require("../models/SQL/turns");
-const { Users } = require("../models/SQL/users");
+const { Advisers } = require('../models/SQL/advisers');
 
 //utils
-const { AppError } = require('../utils/appError');
 const { catchAsync } = require('../utils/catchAsync');
+const { AppError } = require('../utils/appError');
+const { Users } = require('../models/SQL/users');
+const { Campaigns } = require('../models/SQL/campaigns');
+const { Sections } = require('../models/SQL/sections');
+const { Turns } = require('../models/SQL/turns');
 
+//controllers
 const create = catchAsync(async (req,res,next)=>{
+
     const { 
         email,
         password,
         name,
         last_name,
         img_profile,
-        roleId,
+        userId,
         campaignId,
         sectionId,
         turnId
@@ -28,47 +30,47 @@ const create = catchAsync(async (req,res,next)=>{
 	const salt = await bcrypt.genSalt(12);
 	const encryptPass = await bcrypt.hash(password,salt);
 
-    const newUser = await Users.create({
+    const newAdviser = await Advisers.create({
         email,
         password: encryptPass,
         name,
         last_name,
         img_profile,
-        roleId,
+        userId,
         campaignId,
         sectionId,
         turnId
-    });
+    })
 
-	newUser.password = undefined;
+	newAdviser.password = undefined
     
     res.status(201).json({
         status: 'succes',
-        newUser
-    });
+        newAdviser
+    })
 });
 
 const update = catchAsync(async (req,res,next)=>{
-    const { user } = req;
+    const { adviser } = req;
     const {
         last_password,
         password,
         name,
         last_name,
         img_profile,
-        roleId,
+        userId,
         campaignId,
         sectionId,
         turnId
     } = req.body;
 
-    const validPass = await bcrypt.compare(last_password,user.password);
+    const validPass = await bcrypt.compare(last_password,adviser.password);
 
     if (!validPass) {
         return next(new AppError('Invalid password',404));
     };
 
-    const passRepeat = await bcrypt.compare(password,user.password);
+    const passRepeat = await bcrypt.compare(password,adviser.password);
 
     if (passRepeat) {
         return next(new AppError('Password same as your previous password',404))
@@ -77,12 +79,12 @@ const update = catchAsync(async (req,res,next)=>{
 	const salt = await bcrypt.genSalt(12);
 	const encryptPass = await bcrypt.hash(password,salt);
 
-    await user.update({
+    await adviser.update({
         password: encryptPass,
         name,
         last_name,
         img_profile,
-        roleId,
+        userId,
         campaignId,
         sectionId,
         turnId
@@ -91,67 +93,78 @@ const update = catchAsync(async (req,res,next)=>{
     res.status(200).json({
         status: 'succes',
     });
-});
+})
 
 const deleted = catchAsync(async (req,res,next)=>{
-    const { user } = req;
+    const { adviser } = req;
 
-    await user.update({
-        status:false
+    await adviser.update({
+        status: false
     });
-    
-    res.status(200).json({
-        status: 'succes',
-    });
+
+    res.status(201).json({
+        status: 'success'
+    })
 });
 
 const getItems = catchAsync(async (req,res,next)=>{
-    const data = await Users.findAll({
+    const data = await Advisers.findAll({
         where:{
             status: true
         },
-        include: [
+        include:[
             {
-                model: Roles,
+                model:Users,
+                include:[
+                    {
+                        model:Campaigns,
+                        attributes: ['id','name','createdAt','updatedAt']
+                    },
+                    {
+                        model:Sections,
+                        attributes: ['id','name','createdAt','updatedAt']
+                    },
+                ],
+                attributes: ['id','email','name','last_name','img_profile','createdAt','updatedAt']
+            },
+            {
+                model:Campaigns,
                 attributes: ['id','name','createdAt','updatedAt']
             },
             {
-                model: Campaigns,
+                model:Sections,
                 attributes: ['id','name','createdAt','updatedAt']
             },
             {
-                model: Sections,
-                attributes: ['id','name','createdAt','updatedAt']
-            },
-            {
-                model: Turns,
+                model:Turns,
                 attributes: ['id','name','entrance_time','exit_time','createdAt','updatedAt']
             }
         ],
         attributes: ['id','email','name','last_name','img_profile','createdAt','updatedAt']
     });
 
-    res.status(200).json({
+    res.status(201).json({
         status: 'success',
         data
     });
 });
 
 const getItem = catchAsync(async (req,res,next)=>{
-    const { user } = req;
+    const { adviser } = req;
 
-    user.password = undefined
+    adviser.password = undefined;
 
-    res.status(200).json({
+    res.status(201).json({
         status: 'success',
-        user
-    });
-});
+        adviser
+    })
+})
 
-module.exports = {
+module.exports = { 
     create,
     update,
     deleted,
     getItems,
     getItem
 }
+

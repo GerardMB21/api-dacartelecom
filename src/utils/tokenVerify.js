@@ -27,7 +27,10 @@ const tokenVerify =async (req,res,next)=>{
 		return next(new AppError('The owner this token doesnt exist anymore',403))
 	}
 
-	req.userId = parseInt(decoded.id);
+	req.userSession = {
+		id: parseInt(decoded.id),
+		role: parseInt(decoded.role)
+	};
 
     next()
 };

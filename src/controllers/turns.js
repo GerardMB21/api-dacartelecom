@@ -1,22 +1,10 @@
+//models
 const { Turns } = require("../models/SQL/turns");
+
+//utils
 const { catchAsync } = require("../utils/catchAsync");
 
-const getItems = catchAsync(async (req,res,next)=>{
-    const data = await Turns.findAll({
-        attributes:['id','name','entrance_time','exit_time','createdAt','updatedAt']
-    });
-
-    res.status(200).json({
-        status: 'succes',
-        data
-    });
-})
-
-const getItem = (req,res)=>{
-
-}
-
-const createItem = catchAsync(async (req,res,next)=>{
+const create = catchAsync(async (req,res,next)=>{
     const { name,entrance_time,exit_time } = req.body;
     const newTurn = await Turns.create({
         name,
@@ -28,20 +16,51 @@ const createItem = catchAsync(async (req,res,next)=>{
         status: 'succes',
         newTurn
     })
-})
+});
 
-const updateItem = (req,res)=>{
+const update = catchAsync(async (req,res,next)=>{
+    const { turn } = req;
+    const { name,entrance_time,exit_time } = req.body;
 
-}
+    await turn.update({
+        name,
+        entrance_time,
+        exit_time
+    })
 
-const deleteItem = (req,res)=>{
+    res.status(201).json({
+        status: 'success'
+    })
+});
 
-}
+const deleted = catchAsync(async (req,res,next)=>{
+    const { turn } = req;
+
+    await turn.update({
+        status: false
+    })
+
+    res.status(201).json({
+        status: 'success'
+    })
+});
+
+const getItems = catchAsync(async (req,res,next)=>{
+    const data = await Turns.findAll({
+        where: {
+            status: true
+        }
+    });
+
+    res.status(200).json({
+        status: 'success',
+        data
+    });
+});
 
 module.exports = {
-    getItems,
-    getItem,
-    createItem,
-    updateItem,
-    deleteItem
+    create,
+    update,
+    deleted,
+    getItems
 }

@@ -8,23 +8,25 @@ const { catchAsync } = require("../utils/catchAsync");
 
 //controllers
 const create = catchAsync(async (req,res,next)=>{
-    const { name } = req.body;
+    const { name,campaignId,sectionId } = req.body;
 
-    const newCampaign = await Campaigns.create({
-        name
+    const newProduct = await Products.create({
+        name,
+        campaignId,
+        sectionId
     });
 
     res.status(200).json({
         status: 'success',
-        newCampaign
-    })
+        newProduct
+    });
 });
 
 const update = catchAsync(async (req,res,next)=>{
-    const { campaign } = req;
+    const { product } = req;
     const { name } = req.body;
 
-    await campaign.update({
+    await product.update({
         name
     });
 
@@ -34,9 +36,9 @@ const update = catchAsync(async (req,res,next)=>{
 });
 
 const deleted = catchAsync(async (req,res,next)=>{
-    const { campaign } = req;
+    const { product } = req;
 
-    await campaign.update({
+    await product.update({
         status: false
     });
 
@@ -46,37 +48,32 @@ const deleted = catchAsync(async (req,res,next)=>{
 });
 
 const getItems = catchAsync(async (req,res,next)=>{
-    const sections = await Sections.findAll({
+    const data = await Products.findAll({
         where:{
             status: true
         },
-        attributes: ['id','name','createdAt','updatedAt']
-    })
-
-    const data = await Campaigns.findAll({
-        where:{
-            status: true
-        },
-        include: {
-            model: Sections,
-            include: {
-                model: Products,
+        include:[
+            {
+                model: Campaigns,
                 attributes: ['id','name','createdAt','updatedAt']
             },
-            attributes: ['id','name','createdAt','updatedAt']
-        },
+            {
+                model: Sections,
+                attributes: ['id','name','createdAt','updatedAt']
+            }
+        ],
         attributes: ['id','name','createdAt','updatedAt']
     });
 
     res.status(200).json({
         status: 'success',
         data
-    })
-})
+    });
+});
 
 module.exports = {
     create,
     update,
     deleted,
     getItems
-}
+};

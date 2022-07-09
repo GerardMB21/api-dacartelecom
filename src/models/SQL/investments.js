@@ -9,54 +9,33 @@ const Investments = dbConnect.define('investment', {
         autoIncrement: true,
         allowNull: false
     },
+    name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
     inversion: {
         type: DataTypes.DECIMAL,
         allowNull: false,
-        validate:{
-            isNumeric:true
-        }
-    },
-    lead: {
-        type: DataTypes.DECIMAL,
-        allowNull: false,
-        validate:{
-            isNumeric:true
-        }
-    },
-    google: {
-        type: DataTypes.DECIMAL,
-        allowNull: false,
-        validate:{
-            isNumeric:true
-        }
     },
     date: {
         type: DataTypes.DATE,
         allowNull: false,
-        validate:{
-            isDate:true
-        }
+    },
+    userId: {
+        type: DataTypes.INTEGER,
+        allowNull: false
     },
     campaignId: {
         type: DataTypes.INTEGER,
-        allowNull: false,
-        select:false,
-        validate:{
-            isNumeric:true
-        }
+        allowNull: false
     },
     sectionId: {
         type: DataTypes.INTEGER,
-        allowNull: false,
-        select:false,
-        validate:{
-            isNumeric:true
-        }
+        allowNull: false
     },
     status: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
-        select:false,
         defaultValue: true
     }
 });

@@ -1,79 +1,64 @@
+//models
 const { Roles } = require('../models/SQL/roles');
+
+//utils
 const { catchAsync } = require('../utils/catchAsync');
 
-const getItems = catchAsync(async (req,res,next)=>{
-    const { permission } = req
-
-    let data = await Roles.findAll({
-        where:{
-            status:true
-        },
-        attributes:['id','name','createdAt','updatedAt']
-    });
-
-    if (permission) {
-        data = await Roles.findAll({
-            attributes:['id','name','status','createdAt','updatedAt']
-        });
-    }
-
-    res.status(200).json({
-        status: 'succes',
-        data
-    });
-})
-
-const getItem = catchAsync(async (req,res,next)=>{
-    const { role } = req;
-
-    res.status(200).json({
-        status: 'succes',
-        role
-    })
-})
-
-const createItem = catchAsync(async (req,res,next)=>{
+//controllers
+const create = catchAsync(async (req,res,next)=>{
     const { name } = req.body;
+    
     const roles = await Roles.create({
-        name,
-        statusId:1
+        name
     })
 
     res.status(200).json({
         status: 'succes',
         roles
     })
-})
+});
 
-const updateItem = catchAsync(async (req,res,next)=>{
+const update = catchAsync(async (req,res,next)=>{
     const { role } = req;
     const { name } = req.body;
 
     await role.update({
         name
-    })
+    });
 
-    res.status(200).json({
-        status: 'succes'
-    })
-})
+    res.status(201).json({
+        status: 'success'
+    });
+});
 
-const deleteItem = catchAsync(async (req,res,next)=>{
+const deleted = catchAsync(async (req,res,next)=>{
     const { role } = req;
 
     await role.update({
-        status:false
-    })
+        status: false
+    });
+
+    res.status(201).json({
+        status: 'success'
+    });
+});
+
+const getItems = catchAsync(async (req,res,next)=>{
+    const data = await Roles.findAll({
+        where: {
+            status: true
+        }
+    });
 
     res.status(200).json({
-        status: 'succes'
-    })
-})
+        status: 'success',
+        data
+    });
+}) 
 
 module.exports = {
-    getItems,
-    getItem,
-    createItem,
-    updateItem,
-    deleteItem
+    create,
+    update,
+    deleted,
+    getItems
 }

@@ -2,6 +2,7 @@ const { body, validationResult } = require('express-validator');
 
 //models
 const { Campaigns } = require('../models/SQL/campaigns');
+const { Sections } = require('../models/SQL/sections');
 
 //utils
 const { AppError } = require('../utils/appError');
@@ -21,8 +22,8 @@ const checkResult = (req, res, next) => {
 	next();
 };
 
-const checkCampaign = async (req,res,next)=>{
-	const { campaignId } = req.body;
+const checkCampSect = async (req,res,next)=>{
+	const { campaignId,sectionId } = req.body;
 
 	const campaign = await Campaigns.findOne({
 		where:{
@@ -34,15 +35,27 @@ const checkCampaign = async (req,res,next)=>{
 	if (!campaign) {
 		return next(new AppError('Campaign Id invalid try other Id',404));
 	};
+    
+	const section = await Sections.findOne({
+		where:{
+			id: sectionId,
+			status: true
+		}
+	})
+
+	if (!section) {
+		return next(new AppError('Section Id invalid try other Id',404));
+	};
 
 	next()
 };
 
-const sectionsValidator = [
+const productsValidator = [
 	body('name').notEmpty().withMessage('Name cannot be empty'),
     body('campaignId').isNumeric().withMessage('Invalid parameter, try with a number'),
+    body('sectionId').isNumeric().withMessage('Invalid parameter, try with a number'),
 	checkResult,
-	checkCampaign,
+	checkCampSect,
 ];
 
 const updateValidator = [
@@ -51,6 +64,6 @@ const updateValidator = [
 ];
 
 module.exports = { 
-	sectionsValidator,
+	productsValidator,
 	updateValidator
 };

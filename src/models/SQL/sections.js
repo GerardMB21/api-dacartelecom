@@ -15,13 +15,11 @@ const Sections = dbConnect.define('section', {
     },
     campaignId: {
         type: DataTypes.INTEGER,
-        allowNull: false,
-        select:false
+        allowNull: false
     },
     status: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
-        select:false,
         defaultValue: true
     }
 });

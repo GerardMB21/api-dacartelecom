@@ -27,7 +27,7 @@ const Users = dbConnect.define('users', {
         allowNull: false
     },
     img_profile: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
         allowNull: true
     },
     roleId: {
