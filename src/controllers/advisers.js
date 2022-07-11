@@ -20,7 +20,6 @@ const create = catchAsync(async (req,res,next)=>{
         password,
         name,
         last_name,
-        img_profile,
         userId,
         campaignId,
         sectionId,
@@ -35,7 +34,6 @@ const create = catchAsync(async (req,res,next)=>{
         password: encryptPass,
         name,
         last_name,
-        img_profile,
         userId,
         campaignId,
         sectionId,
@@ -54,10 +52,8 @@ const update = catchAsync(async (req,res,next)=>{
     const { adviser } = req;
     const {
         last_password,
-        password,
         name,
         last_name,
-        img_profile,
         userId,
         campaignId,
         sectionId,
@@ -70,20 +66,9 @@ const update = catchAsync(async (req,res,next)=>{
         return next(new AppError('Invalid password',404));
     };
 
-    const passRepeat = await bcrypt.compare(password,adviser.password);
-
-    if (passRepeat) {
-        return next(new AppError('Password same as your previous password',404))
-    }
-
-	const salt = await bcrypt.genSalt(12);
-	const encryptPass = await bcrypt.hash(password,salt);
-
     await adviser.update({
-        password: encryptPass,
         name,
         last_name,
-        img_profile,
         userId,
         campaignId,
         sectionId,
@@ -93,7 +78,35 @@ const update = catchAsync(async (req,res,next)=>{
     res.status(200).json({
         status: 'succes',
     });
-})
+});
+
+const updatePassword = catchAsync(async (req,res,next)=>{
+    const { user } = req;
+    const { password } = req.body;
+
+    const validPass = await bcrypt.compare(last_password,user.password);
+
+    if (!validPass) {
+        return next(new AppError('Invalid password',404));
+    };
+
+    const passRepeat = await bcrypt.compare(password,user.password);
+
+    if (passRepeat) {
+        return next(new AppError('Password same as your previous password',404))
+    }
+
+	const salt = await bcrypt.genSalt(12);
+	const encryptPass = await bcrypt.hash(password,salt);
+
+    await user.update({
+        password: encryptPass,
+    });
+    
+    res.status(200).json({
+        status: 'succes',
+    });
+});
 
 const deleted = catchAsync(async (req,res,next)=>{
     const { adviser } = req;
@@ -165,6 +178,7 @@ module.exports = {
     update,
     deleted,
     getItems,
-    getItem
+    getItem,
+    updatePassword
 }
 

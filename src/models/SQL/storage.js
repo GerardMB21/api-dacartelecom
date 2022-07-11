@@ -13,10 +13,6 @@ const Storage = dbConnect.define('storage', {
         type: DataTypes.STRING,
         allowNull: false
     },
-    dataId: {
-        type: DataTypes.INTEGER,
-        allowNull: false
-    },
     status: {
         type: DataTypes.BOOLEAN,
         allowNull: false,

@@ -15,7 +15,7 @@ const Data = dbConnect.define('data', {
         unique: true
     },
     permission: {
-        type: DataTypes.STRING,
+        type: DataTypes.INTEGER,
         allowNull: true
     },
     roleId: {
@@ -25,6 +25,11 @@ const Data = dbConnect.define('data', {
     userId: {
         type: DataTypes.INTEGER,
         allowNull: false,
+    },
+    storageId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        unique: true
     },
     status: {
         type: DataTypes.BOOLEAN,

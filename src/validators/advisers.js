@@ -95,11 +95,6 @@ const adviserValidator = [
 const updateValidator = [
 	body('name').notEmpty().withMessage('Name cannot be empty'),
     body('last_name').notEmpty().withMessage('Last name cannot be empty'),
-	body('password')
-		.isLength({ min: 5 })
-		.withMessage('Password must be at least 5 characters long')
-		.isAlphanumeric()
-		.withMessage('Password must contain letters and numbers'),
 	body('userId').isNumeric().withMessage('User Id not valid'),
 	body('campaignId').isNumeric().withMessage('Campaign Id not valid'),
 	body('sectionId').isNumeric().withMessage('Section Id not valid'),
@@ -108,7 +103,17 @@ const updateValidator = [
 	checkParameters,
 ];
 
+const passwordValidator = [
+	body('password')
+		.isLength({ min: 5 })
+		.withMessage('Password must be at least 5 characters long')
+		.isAlphanumeric()
+		.withMessage('Password must contain letters and numbers'),
+		checkResult,
+];
+
 module.exports = { 
 	adviserValidator,
-	updateValidator
+	updateValidator,
+	passwordValidator
 };

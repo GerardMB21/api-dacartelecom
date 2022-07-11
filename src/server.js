@@ -41,8 +41,6 @@ dbConnect.authenticate()
     //products relations
     Campaigns.hasMany(Products,{ foreignKey:'campaignId' });
     Sections.hasMany(Products,{ foreignKey:'sectionId' });
-    //data relations
-    Roles.hasMany(Data,{ foreignKey:'roleId' });
     //sections relations
     Campaigns.hasMany(Sections,{ foreignKey:'campaignId' });
     //solds relations
@@ -52,9 +50,9 @@ dbConnect.authenticate()
     Sections.hasMany(Solds,{ foreignKey:'sectionId' });
     Products.hasMany(Solds,{ foreignKey:'productId' });
     //data relations
+    Roles.hasMany(Data,{ foreignKey:'roleId' });
     Users.hasMany(Data,{ foreignKey:'userId' });
-    //storage relations
-    Data.hasMany(Storage,{ foreignKey:'dataId' })
+    Storage.hasMany(Data,{ foreignKey:'storageId' });
 
 
     //user relations
@@ -76,6 +74,8 @@ dbConnect.authenticate()
     Products.belongsTo(Sections);
     //data relations
     Data.belongsTo(Roles);
+    Data.belongsTo(Users);
+    Data.belongsTo(Storage);
     //section relations
     Sections.belongsTo(Campaigns);
     //solds relations
@@ -84,13 +84,11 @@ dbConnect.authenticate()
     Solds.belongsTo(Campaigns);
     Solds.belongsTo(Sections);
     Solds.belongsTo(Products);
-    //storage relations
-    Storage.belongsTo(Data);
 
 dbConnect.sync()
 	.then(() => console.log('Db synced'))
 	.catch(err => console.log(err));
 
 app.listen(port,()=>{
-    console.log(`Server on Port http://localhost:${port}/api/v1/`);
+    console.log(`Server on Port http://localhost:${port}`);
 });

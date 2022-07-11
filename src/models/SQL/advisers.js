@@ -26,10 +26,6 @@ const Advisers = dbConnect.define('adviser', {
         type: DataTypes.STRING,
         allowNull: false
     },
-    img_profile: {
-        type: DataTypes.STRING,
-        allowNull: true
-    },
     userId: {
         type: DataTypes.INTEGER,
         allowNull: false,

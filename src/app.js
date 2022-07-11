@@ -1,6 +1,8 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
+const app = express();
 
 //Routers
 const { advisersRouter } = require('./routes/advisers.routes');
@@ -19,10 +21,9 @@ const { usersRouter } = require('./routes/users.routes');
 const { globalErrorHandler } = require('./utils/globarError');
 const { AppError } = require('./utils/appError');
 
-const app = express();
-
 app.use(cors());
 app.use(express.json());
+app.use('/',express.static(path.join(__dirname,'storage')));
 
 //invocate routes
 app.use("/api/v1/advisers", advisersRouter);

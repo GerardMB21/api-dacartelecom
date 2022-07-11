@@ -1,38 +1,88 @@
-const { Users } = require("../models/SQL/users");
-const { AppError } = require("./appError");
 const jwt = require('jsonwebtoken');
+const { Roles } = require('../models/SQL/roles');
 
-const tokenVerify =async (req,res,next)=>{
+//models
+const { Users } = require("../models/SQL/users");
 
-	let token;
+//utils
+const { AppError } = require("./appError");
+const { catchAsync } = require("./catchAsync");
 
-	if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
-		token = req.headers.authorization.split(" ")[1];
-	};
+const verifyToken = catchAsync(async (req,res,next)=>{
+		let token;
 
-	if (!token) {
-		return next(new AppError('Invalid token', 403))
-	}
+		if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+			token = req.headers.authorization.split(" ")[1];
+		};
 
-	const decoded = await jwt.verify(token, process.env.JWT_SIGN);
-
-	const user = await Users.findOne({
-		where: {
-			id: decoded.id,
-			status: true
+		if (!token) {
+			return next(new AppError('Invalid token', 403))
 		}
-	})
 
-	if (!user) {
-		return next(new AppError('The owner this token doesnt exist anymore',403))
+		const decoded = await jwt.verify(token, process.env.JWT_SIGN);
+
+		const user = await Users.findOne({
+			where: {
+				id: decoded.id,
+				status: true
+			}
+		})
+
+		if (!user) {
+			return next(new AppError('The owner this token doesnt exist anymore',403))
+		}
+
+		const role = await Roles.findOne({
+			where:{
+				id:user.roleId,
+				status: true
+			}
+		})
+
+		req.userSession = {
+			id: user.id,
+			roleId: user.roleId,
+			role: role.name
+		}
+
+		next()
 	}
+);
 
-	req.userSession = {
-		id: parseInt(decoded.id),
-		role: parseInt(decoded.role)
+const onlyAdmin = catchAsync(async (req,res,next)=>{
+	const { userSession } = req;
+
+	if (userSession.role !== 'admin') {
+		return next(new AppError('You dont have permission',403));
 	};
 
-    next()
-};
+	next()
+});
 
-module.exports = { tokenVerify };
+const notSupervisor = catchAsync(async (req,res,next)=>{
+	const { userSession } = req;
+
+	if (userSession.role !== 'supervisor') {
+		return next();
+	};
+
+	next(new AppError('You dont have permision',403))
+});
+
+const permissions = catchAsync(async (req,res,next)=>{
+	const { userSession } = req;
+	const dont = ['counter','supervisor'];
+
+	if (dont.includes(userSession.role)) {
+		return next(new AppError('You dont have permission',403));
+	};
+
+	next()
+})
+
+module.exports = { 
+	verifyToken,
+	onlyAdmin,
+	notSupervisor,
+	permissions
+};

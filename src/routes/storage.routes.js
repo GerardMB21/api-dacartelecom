@@ -1,13 +1,20 @@
 const express = require('express');
-const multer = require('multer');
+
+//controllers
+const { create, deleted } = require('../controllers/storage');
+const { uploadMiddleware, fileExist } = require('../middlewares/storage');
+
+//utils
+const { verifyToken, notSupervisor } = require('../utils/tokenVerify');
+
+//middlewares
+
+//validators
 
 const storageRouter = express.Router();
 
 // htttp://localhost:port/api/v1/roles GET,POST,DELET,PUT
-storageRouter.get("/",(req,res)=>{
-    const data = ["storage"]
-
-    res.send({data})
-})
+storageRouter.post("/create", verifyToken, notSupervisor, uploadMiddleware.single("file"),create);
+storageRouter.delete("/delete/:id", verifyToken, notSupervisor, fileExist,deleted)
 
 module.exports = { storageRouter };

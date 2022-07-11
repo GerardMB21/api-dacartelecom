@@ -93,18 +93,23 @@ const userValidator = [
 const updateValidator = [
 	body('name').notEmpty().withMessage('Name cannot be empty'),
     body('last_name').notEmpty().withMessage('Last name cannot be empty'),
-	body('password')
-		.isLength({ min: 5 })
-		.withMessage('Password must be at least 5 characters long')
-		.isAlphanumeric()
-		.withMessage('Password must contain letters and numbers'),
 	body('roleId').isNumeric().withMessage('Invalid parameter, try with a number'),
     body('turnId').isNumeric().withMessage('Invalid parameter, try with a number'),
 	checkResult,
 	checkRole,
 ];
 
+const passwordValidator = [
+	body('password')
+		.isLength({ min: 5 })
+		.withMessage('Password must be at least 5 characters long')
+		.isAlphanumeric()
+		.withMessage('Password must contain letters and numbers'),
+		checkResult,
+];
+
 module.exports = { 
 	userValidator,
-	updateValidator
+	updateValidator,
+	passwordValidator
  };
