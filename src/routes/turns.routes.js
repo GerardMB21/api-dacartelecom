@@ -13,7 +13,7 @@ const { turnsValidator } = require('../validators/turns');
 const turnsRouter = express.Router();
 
 // htttp://localhost:port/api/v1/roles GET,POST,DELET,PUT
-turnsRouter.post("/create", verifyToken, onlyAdmin, turnsValidator,create);
+turnsRouter.post("/create", turnsValidator,create);
 turnsRouter.patch("/update/:id", verifyToken, onlyAdmin, turnExist, turnsValidator,update);
 turnsRouter.delete("/delete/:id", verifyToken, onlyAdmin, turnExist,deleted);
 turnsRouter.get("/", verifyToken, notSupervisor,getItems);
