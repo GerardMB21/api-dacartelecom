@@ -3,14 +3,14 @@ const jwt = require('jsonwebtoken');
 
 //models
 const { Advisers } = require('../models/SQL/advisers');
-
-//utils
-const { catchAsync } = require('../utils/catchAsync');
-const { AppError } = require('../utils/appError');
 const { Users } = require('../models/SQL/users');
 const { Campaigns } = require('../models/SQL/campaigns');
 const { Sections } = require('../models/SQL/sections');
 const { Turns } = require('../models/SQL/turns');
+
+//utils
+const { catchAsync } = require('../utils/catchAsync');
+const { AppError } = require('../utils/appError');
 
 //controllers
 const create = catchAsync(async (req,res,next)=>{
@@ -48,10 +48,41 @@ const create = catchAsync(async (req,res,next)=>{
     })
 });
 
+const login = catchAsync(async (req,res,next)=>{
+    const { email,password } = req.body;
+
+    const user = await Advisers.findOne({
+        where:{
+            email,
+            status: true
+        }
+    });
+
+    if (!user) {
+        return next(new AppError('Adviser not exist',404));
+    };
+
+    const validPass = await bcrypt.compare(password,user.password);
+
+    if (!validPass) {
+        return next(new AppError('Invalid password',404));
+    };
+
+    const token = jwt.sign({ 
+        id: user.id,
+    },process.env.JWT_SIGN,{
+        expiresIn:'24h',
+    });
+
+    res.status(200).json({
+        status:'succes',
+        token
+    });
+});
+
 const update = catchAsync(async (req,res,next)=>{
     const { adviser } = req;
     const {
-        last_password,
         name,
         last_name,
         userId,
@@ -59,12 +90,6 @@ const update = catchAsync(async (req,res,next)=>{
         sectionId,
         turnId
     } = req.body;
-
-    const validPass = await bcrypt.compare(last_password,adviser.password);
-
-    if (!validPass) {
-        return next(new AppError('Invalid password',404));
-    };
 
     await adviser.update({
         name,
@@ -81,16 +106,20 @@ const update = catchAsync(async (req,res,next)=>{
 });
 
 const updatePassword = catchAsync(async (req,res,next)=>{
-    const { user } = req;
-    const { password } = req.body;
+    const { adviser,userSession } = req;
+    const { last_password,password } = req.body;
 
-    const validPass = await bcrypt.compare(last_password,user.password);
+    if (parseInt(adviser.id) !== parseInt(userSession.id)) {
+        return next(new AppError('You dont the owner this count',403));
+    };
+
+    const validPass = await bcrypt.compare(last_password,adviser.password);
 
     if (!validPass) {
         return next(new AppError('Invalid password',404));
     };
 
-    const passRepeat = await bcrypt.compare(password,user.password);
+    const passRepeat = await bcrypt.compare(password,adviser.password);
 
     if (passRepeat) {
         return next(new AppError('Password same as your previous password',404))
@@ -99,7 +128,23 @@ const updatePassword = catchAsync(async (req,res,next)=>{
 	const salt = await bcrypt.genSalt(12);
 	const encryptPass = await bcrypt.hash(password,salt);
 
-    await user.update({
+    await adviser.update({
+        password: encryptPass,
+    });
+    
+    res.status(200).json({
+        status: 'succes',
+    });
+});
+
+const updatePasswordAdmin = catchAsync(async (req,res,next)=>{
+    const { adviser } = req;
+    const { password } = req.body;
+
+	const salt = await bcrypt.genSalt(12);
+	const encryptPass = await bcrypt.hash(password,salt);
+
+    await adviser.update({
         password: encryptPass,
     });
     
@@ -175,10 +220,12 @@ const getItem = catchAsync(async (req,res,next)=>{
 
 module.exports = { 
     create,
+    login,
     update,
     deleted,
     getItems,
     getItem,
-    updatePassword
+    updatePassword,
+    updatePasswordAdmin
 }
 

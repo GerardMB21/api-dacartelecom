@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const { Advisers } = require('../models/SQL/advisers');
 const { Roles } = require('../models/SQL/roles');
 
 //models
@@ -49,6 +50,38 @@ const verifyToken = catchAsync(async (req,res,next)=>{
 	}
 );
 
+const verifyTokenAdviser = catchAsync(async (req,res,next)=>{
+		let token;
+
+		if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+			token = req.headers.authorization.split(" ")[1];
+		};
+
+		if (!token) {
+			return next(new AppError('Invalid token', 403))
+		}
+
+		const decoded = await jwt.verify(token, process.env.JWT_SIGN);
+
+		const user = await Advisers.findOne({
+			where: {
+				id: decoded.id,
+				status: true
+			}
+		})
+
+		if (!user) {
+			return next(new AppError('The owner this token doesnt exist anymore',403))
+		}
+
+		req.userSession = {
+			id: user.id,
+		}
+
+		next()
+	}
+);
+
 const onlyAdmin = catchAsync(async (req,res,next)=>{
 	const { userSession } = req;
 
@@ -82,6 +115,7 @@ const permissions = catchAsync(async (req,res,next)=>{
 
 module.exports = { 
 	verifyToken,
+	verifyTokenAdviser,
 	onlyAdmin,
 	notSupervisor,
 	permissions

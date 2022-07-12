@@ -82,7 +82,6 @@ const login = catchAsync(async (req,res,next)=>{
 const update = catchAsync(async (req,res,next)=>{
     const { user } = req;
     const {
-        last_password,
         name,
         last_name,
         roleId,
@@ -90,12 +89,6 @@ const update = catchAsync(async (req,res,next)=>{
         sectionId,
         turnId
     } = req.body;
-
-    const validPass = await bcrypt.compare(last_password,user.password);
-
-    if (!validPass) {
-        return next(new AppError('Invalid password',404));
-    };
 
     await user.update({
         name,
@@ -113,7 +106,7 @@ const update = catchAsync(async (req,res,next)=>{
 
 const updatePassword = catchAsync(async (req,res,next)=>{
     const { user, userSession } = req;
-    const { password } = req.body;
+    const { last_password,password } = req.body;
 
     if (user.id !== userSession.id) {
         return next(new AppError('You are not the owner of this account',403));
@@ -146,18 +139,6 @@ const updatePassword = catchAsync(async (req,res,next)=>{
 const updatePasswordAdmin = catchAsync(async (req,res,next)=>{
     const { user } = req;
     const { password } = req.body;
-
-    const validPass = await bcrypt.compare(last_password,user.password);
-
-    if (!validPass) {
-        return next(new AppError('Invalid password',404));
-    };
-
-    const passRepeat = await bcrypt.compare(password,user.password);
-
-    if (passRepeat) {
-        return next(new AppError('Password same as your previous password',404))
-    }
 
 	const salt = await bcrypt.genSalt(12);
 	const encryptPass = await bcrypt.hash(password,salt);
@@ -227,11 +208,83 @@ const getItem = catchAsync(async (req,res,next)=>{
 });
 
 const getItemQuery = catchAsync(async (req,res,next)=>{
-    const { users } = req;
+    const { roleId,campaignId,sectionId,turnId} = req.query;
+    const data = {
+        roleId,
+        campaignId,
+        sectionId,
+        turnId
+    }
+
+    let users = []
+
+	const searchUsers = await Users.findAll({ 
+		where: { 
+			status:true
+		},
+		include: [
+			{
+				model: Roles,
+				attributes: ['id','name','createdAt','updatedAt']
+			},
+			{
+				model: Campaigns,
+				attributes: ['id','name','createdAt','updatedAt']
+			},
+			{
+				model: Sections,
+				attributes: ['id','name','createdAt','updatedAt']
+			},
+			{
+				model: Turns,
+				attributes: ['id','name','entrance_time','exit_time','createdAt','updatedAt']
+			}
+		]
+	});
+
+    searchUsers.map(user=>{
+        user.password = undefined,
+        user.status = undefined
+    });
+
+    if (data.roleId) {
+        searchUsers.map(user=>{
+            if (parseInt(user.roleId)===parseInt(data.roleId)) {
+                users.push(user)
+            }
+        });
+    };
+
+    if (data.campaignId) {
+        searchUsers.map(user=>{
+            if (parseInt(user.campaignId)===parseInt(data.campaignId)) {
+                users.push(user)
+            }
+        });
+    };
+
+    if (data.sectionId) {
+        searchUsers.map(user=>{
+            if (parseInt(user.sectionId)===parseInt(data.sectionId)) {
+                users.push(user)
+            }
+        });
+    };
+
+    if (data.turnId) {
+        searchUsers.map(user=>{
+            if (parseInt(user.turnId)===parseInt(data.turnId)) {
+                users.push(user)
+            }
+        });
+    };
 
     users.map(user=>{
-        user.password = undefined
-    })
+        user.roleId = undefined,
+        user.campaignId = undefined,
+        user.sectionId = undefined,
+        user.turnId = undefined
+    });
 
     res.status(200).json({
         status: 'success',

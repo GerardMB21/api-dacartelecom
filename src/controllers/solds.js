@@ -156,10 +156,19 @@ const getItems = catchAsync(async (req,res,next)=>{
 })
 
 const getQuery = catchAsync(async (req,res,next)=>{
-    const { startDate,finishDate,adviserId,userId,sectionId,campaignId,productId } = req.query;
+    const { 
+            startDate,
+            finishDate,
+            adviserId,
+            userId,
+            sectionId,
+            campaignId,
+            productId
+        } = req.query;
 
     let sales = [];
-    let searchSales = await Solds.findAll({
+    let parameters = [];
+    const searchSales = await Solds.findAll({
         where:{
             status: true
         },
@@ -227,11 +236,11 @@ const getQuery = catchAsync(async (req,res,next)=>{
     const data = {
         startDate: new Date(startDate).getTime(),
         finishDate: new Date(finishDate).getTime(),
-        adviserId,
-        userId,
-        campaignId,
-        sectionId,
-        productId,
+        campaignId: parseInt(campaignId),
+        sectionId: parseInt(sectionId),
+        productId: parseInt(productId),
+        userId: parseInt(userId),
+        adviserId: parseInt(adviserId),
     };
 
     if (!data.startDate) {
@@ -247,9 +256,55 @@ const getQuery = catchAsync(async (req,res,next)=>{
             };
         });
 
-        if (adviserId) {
-            sales.filter(sale=>sale.adviserId === data.adviserId)
-        }
+        if (data.campaignId) {
+            parameters = [];
+            sales.map(sale=>{
+                if (sale.campaignId === data.campaignId) {
+                    parameters.push(sale)
+                }
+            });
+            sales = parameters;
+        };
+
+        if (data.sectionId) {
+            parameters = [];
+            sales.map(sale=>{
+                if (sale.sectionId === data.sectionId) {
+                    parameters.push(sale)
+                }
+            });
+            sales = parameters;
+        };
+
+        if (data.productId) {
+            parameters = [];
+            sales.map(sale=>{
+                if (sale.productId === data.productId) {
+                    parameters.push(sale)
+                }
+            });
+            sales = parameters;
+        };
+
+        if (data.userId) {
+            parameters = [];
+            sales.map(sale=>{
+                if (sale.userId === data.userId) {
+                    parameters.push(sale)
+                }
+            });
+            sales = parameters;
+        };
+
+        if (data.adviserId) {
+            parameters = [];
+            sales.map(sale=>{
+                if (sale.adviserId === data.adviserId) {
+                    parameters.push(sale)
+                }
+            });
+            sales = parameters;
+        };
     } else {
         const time = finishDate.split(" ");
         let finishDay = data.finishDate;
@@ -263,7 +318,69 @@ const getQuery = catchAsync(async (req,res,next)=>{
                 sales.push(sale)
             };
         });
+
+        if (data.campaignId) {
+            parameters = [];
+            sales.map(sale=>{
+                if (sale.campaignId === data.campaignId) {
+                    parameters.push(sale)
+                }
+            });
+            sales = parameters;
+        };
+
+        if (data.sectionId) {
+            parameters = [];
+            sales.map(sale=>{
+                if (sale.sectionId === data.sectionId) {
+                    parameters.push(sale)
+                }
+            });
+            sales = parameters;
+        };
+
+        if (data.productId) {
+            parameters = [];
+            sales.map(sale=>{
+                if (sale.productId === data.productId) {
+                    parameters.push(sale)
+                }
+            });
+            sales = parameters;
+        };
+
+        if (data.userId) {
+            parameters = [];
+            sales.map(sale=>{
+                if (sale.userId === data.userId) {
+                    parameters.push(sale)
+                }
+            });
+            sales = parameters;
+        };
+
+        if (data.adviserId) {
+            parameters = [];
+            sales.map(sale=>{
+                if (sale.adviserId === data.adviserId) {
+                    parameters.push(sale)
+                }
+            });
+            sales = parameters;
+        };
     }
+
+    if (!sales.length) {
+        return next(new AppError('Sales not found',404));
+    };
+
+    sales.map(sale=>{
+        sale.adviserId = undefined,
+        sale.userId = undefined,
+        sale.campaignId = undefined,
+        sale.sectionId = undefined,
+        sale.productId = undefined
+    })
 
     res.status(200).json({
         status:'success',
