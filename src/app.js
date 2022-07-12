@@ -59,7 +59,7 @@ app.use("/api/v1/solds", soldsRouter);
 app.use("/api/v1/data", dataRouter);
 app.use("/api/v1/storage", storageRouter);
 app.use("/api/v1/turns", turnsRouter);
-app.use("/api/v1/users", usersRouter)
+app.use("/api/v1/users", usersRouter);
 
 app.all('*',(req,res,next)=>{
     next(
