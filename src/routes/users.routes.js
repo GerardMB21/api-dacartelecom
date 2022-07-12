@@ -13,7 +13,7 @@ const { userValidator, updateValidator, passwordValidator } = require('../valida
 const usersRouter = express.Router();
 
 // htttp://localhost:port/api/v1/roles GET,POST,DELET,PUT
-usersRouter.post("/create", userValidator,create);
+usersRouter.post("/create", verifyToken, onlyAdmin, userValidator,create);
 usersRouter.post("/login",login);
 usersRouter.patch("/update/:id", verifyToken, onlyAdmin, userExists, updateValidator,update);
 usersRouter.patch("/update/password/:id", verifyToken, userExists, passwordValidator,updatePassword);
