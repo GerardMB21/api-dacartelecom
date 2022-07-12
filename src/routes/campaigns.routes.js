@@ -16,6 +16,6 @@ const campaignsRouter = express.Router();
 campaignsRouter.post("/create", verifyToken, onlyAdmin, campignsValidator,create);
 campaignsRouter.patch("/update/:id", verifyToken, onlyAdmin, campaignExist, campignsValidator,update);
 campaignsRouter.delete("/delete/:id", verifyToken, onlyAdmin, campaignExist,deleted);
-campaignsRouter.get("/", verifyToken, notSupervisor,getItems);
+campaignsRouter.get("/",getItems);
 
 module.exports = { campaignsRouter };

@@ -16,6 +16,6 @@ const sectionsRouter = express.Router();
 sectionsRouter.post("/create", verifyToken, onlyAdmin, sectionsValidator,create);
 sectionsRouter.patch("/update/:id", verifyToken, onlyAdmin, sectionExist, updateValidator,update);
 sectionsRouter.delete("/delete/:id", verifyToken, onlyAdmin, sectionExist,deleted);
-sectionsRouter.get("/", verifyToken, notSupervisor,getItems);
+sectionsRouter.get("/",getItems);
 
 module.exports = { sectionsRouter };

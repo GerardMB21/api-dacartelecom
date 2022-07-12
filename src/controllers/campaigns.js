@@ -46,12 +46,6 @@ const deleted = catchAsync(async (req,res,next)=>{
 });
 
 const getItems = catchAsync(async (req,res,next)=>{
-    const sections = await Sections.findAll({
-        where:{
-            status: true
-        },
-        attributes: ['id','name','createdAt','updatedAt']
-    })
 
     const data = await Campaigns.findAll({
         where:{
