@@ -28,8 +28,6 @@ const verifyToken = catchAsync(async (req,res,next)=>{
 			}
 		});
 
-		console.log(decoded.id);
-
 		if (!user) {
 			return next(new AppError('The owner this token doesnt exist anymore',403))
 		};
