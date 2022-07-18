@@ -15,6 +15,7 @@ const { sectionsRouter } = require('./routes/sections.routes');
 const { productsRouter } = require('./routes/products.routes');
 const { advisersRouter } = require('./routes/advisers.routes');
 const { soldsRouter } = require('./routes/solds.routes');
+const { goalsRouter } = require('./routes/goal.routes');
 const { investmentsRouter } = require('./routes/investments.routes');
 const { filesRouter } = require('./routes/files.routes');
 
@@ -52,6 +53,7 @@ app.use("/api/v1/sections", sectionsRouter);
 app.use("/api/v1/products", productsRouter);
 app.use("/api/v1/advisers", advisersRouter);
 app.use("/api/v1/solds", soldsRouter);
+app.use("/api/v1/goals", goalsRouter);
 app.use("/api/v1/investments", investmentsRouter);
 app.use("/api/v1/files", filesRouter);
 

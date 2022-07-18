@@ -9,6 +9,7 @@ const { Users } = require('../models/users');
 
 //utils
 const { catchAsync } = require("../utils/catchAsync");
+const { AppError } = require('../utils/appError');
 
 //controlers
 const create = catchAsync(async (req,res,next)=>{

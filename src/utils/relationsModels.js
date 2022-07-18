@@ -1,6 +1,7 @@
 const { Advisers } = require("../models/advisers");
 const { Campaigns } = require("../models/campaigns");
 const { Files } = require("../models/files");
+const { Goals } = require("../models/goal");
 const { Investments } = require("../models/investments");
 const { Products } = require("../models/products");
 const { Roles } = require("../models/roles");
@@ -18,17 +19,20 @@ const relations = ()=>{
         Campaigns.hasMany(Advisers,{ foreignKey:'campaignId' });
         Campaigns.hasMany(Products,{ foreignKey:'campaignId' });
         Campaigns.hasMany(Solds,{ foreignKey:'campaignId' });
-        Campaigns.hasMany(Sections,{ foreignKey:'campaignId' })
+        Campaigns.hasMany(Sections,{ foreignKey:'campaignId' });
+        Campaigns.hasMany(Goals,{ foreignKey:'campaignId' });
         //sections
         Sections.hasMany(Users,{ foreignKey:'sectionId' });
         Sections.hasMany(Advisers,{ foreignKey:'sectionId' });
         Sections.hasMany(Products,{ foreignKey:'sectionId' });
         Sections.hasMany(Solds,{ foreignKey:'sectionId' });
+        Sections.hasMany(Goals,{ foreignKey:'sectionId' });
         //users
         Users.hasMany(Advisers,{ foreignKey:'userId' });
         Users.hasMany(Solds,{ foreignKey:'userId' });
         Users.hasMany(Files,{ foreignKey:'userId' });
         Users.hasMany(Investments,{ foreignKey:'userId' });
+        Users.hasMany(Goals,{ foreignKey:'userId' });
         //advisers
         Advisers.hasMany(Solds,{ foreignKey:'adviserId' });
         //products
@@ -58,6 +62,10 @@ const relations = ()=>{
         Files.belongsTo(Users);
         //investments
         Investments.belongsTo(Users);
+        //goals
+        Goals.belongsTo(Users);
+        Goals.belongsTo(Campaigns);
+        Goals.belongsTo(Sections);
 
 };
 
