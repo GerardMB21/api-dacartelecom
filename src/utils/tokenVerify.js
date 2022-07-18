@@ -1,8 +1,8 @@
 const jwt = require('jsonwebtoken');
-const { Roles } = require('../models/roles');
 
 //models
 const { Users } = require("../models/users");
+const { Roles } = require('../models/roles');
 
 //utils
 const { AppError } = require("./appError");
@@ -26,23 +26,25 @@ const verifyToken = catchAsync(async (req,res,next)=>{
 				id: decoded.id,
 				status: true
 			}
-		})
+		});
+
+		console.log(decoded.id);
 
 		if (!user) {
 			return next(new AppError('The owner this token doesnt exist anymore',403))
-		}
+		};
 
 		const role = await Roles.findOne({
 			where:{
 				id:user.roleId,
 				status: true
 			}
-		})
+		});
 
 		req.userSession = {
 			id: user.id,
 			role: role.name
-		}
+		};
 
 		next()
 	}
