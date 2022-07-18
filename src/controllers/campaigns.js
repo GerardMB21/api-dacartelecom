@@ -1,32 +1,41 @@
 //models
-const { Campaigns } = require("../models/SQL/campaigns");
-const { Products } = require("../models/SQL/products");
-const { Sections } = require("../models/SQL/sections");
+const { Campaigns } = require("../models/campaigns");
+const { Products } = require("../models/products");
+const { Sections } = require("../models/sections");
 
 //utils
 const { catchAsync } = require("../utils/catchAsync");
 
 //controllers
 const create = catchAsync(async (req,res,next)=>{
-    const { name } = req.body;
+    const { name,description } = req.body;
 
     const newCampaign = await Campaigns.create({
-        name
+        name,
+        description
     });
 
     res.status(200).json({
         status: 'success',
         newCampaign
-    })
+    });
 });
 
 const update = catchAsync(async (req,res,next)=>{
     const { campaign } = req;
-    const { name } = req.body;
+    const { name,description } = req.body;
 
-    await campaign.update({
-        name
-    });
+    if (name) {
+        await campaign.update({
+            name
+        });
+    };
+
+    if (description) {
+        await campaign.update({
+            description
+        });
+    };
 
     res.status(201).json({
         status: 'success'
@@ -37,10 +46,10 @@ const deleted = catchAsync(async (req,res,next)=>{
     const { campaign } = req;
 
     await campaign.update({
-        status: false
+        status: !campaign.status
     });
 
-    res.status(201).json({
+    res.status(200).json({
         status: 'success'
     });
 });
@@ -53,24 +62,65 @@ const getItems = catchAsync(async (req,res,next)=>{
         },
         include: {
             model: Sections,
+            required: false,
+            where:{
+                status: true
+            },
             include: {
                 model: Products,
-                attributes: ['id','name','createdAt','updatedAt']
+                required: false,
+                where:{
+                    status: true
+                },
+                attributes: ['id','name','description','createdAt','updatedAt']
             },
-            attributes: ['id','name','createdAt','updatedAt']
+            attributes: ['id','name','description','createdAt','updatedAt']
         },
-        attributes: ['id','name','createdAt','updatedAt']
+        attributes: ['id','name','description','createdAt','updatedAt']
     });
 
     res.status(200).json({
         status: 'success',
         data
-    })
-})
+    });
+});
+
+const getItem = catchAsync(async (req,res,next)=>{
+    const { campaign } = req;
+
+    campaign.status = undefined;
+
+    res.status(200).json({
+        stattus: 'success',
+        campaign
+    });
+});
+
+const getItemsAdmin = catchAsync(async (req,res,next)=>{
+
+    const data = await Campaigns.findAll({
+        where:{
+            status: false
+        },
+        include: {
+            model: Sections,
+            include: {
+                model: Products,
+            },
+        }
+    });
+
+    res.status(200).json({
+        status: 'success',
+        data
+    });
+});
 
 module.exports = {
     create,
     update,
     deleted,
-    getItems
+    getItems,
+    getItem,
+    getItemsAdmin,
 }

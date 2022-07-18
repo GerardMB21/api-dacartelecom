@@ -1,7 +1,8 @@
+
 const { body, validationResult } = require('express-validator');
 
 //models
-const { Campaigns } = require('../models/SQL/campaigns');
+const { Campaigns } = require('../models/campaigns');
 
 //utils
 const { AppError } = require('../utils/appError');
@@ -40,17 +41,12 @@ const checkCampaign = async (req,res,next)=>{
 
 const sectionsValidator = [
 	body('name').notEmpty().withMessage('Name cannot be empty'),
+    body('description').notEmpty().withMessage('Please write a brief description of the role'),
     body('campaignId').isNumeric().withMessage('Invalid parameter, try with a number'),
 	checkResult,
 	checkCampaign,
 ];
 
-const updateValidator = [
-	body('name').notEmpty().withMessage('Name cannot be empty'),
-	checkResult,
-];
-
 module.exports = { 
-	sectionsValidator,
-	updateValidator
+	sectionsValidator
 };

@@ -1,4 +1,4 @@
-const { body, validationResult } = require('express-validator');
+const { body,validationResult } = require('express-validator');
 
 const { AppError } = require('../utils/appError');
 
@@ -19,6 +19,7 @@ const checkResult = (req, res, next) => {
 
 const rolesValidator = [
 	body('name').notEmpty().withMessage('Name cannot be empty'),
+	body('description').notEmpty().withMessage('Please write a brief description of the role'),
 	checkResult,
 ];
 

@@ -1,39 +1,41 @@
 //models
-const { Campaigns } = require("../models/SQL/campaigns");
-const { Investments } = require("../models/SQL/investments");
-const { Roles } = require("../models/SQL/roles");
-const { Sections } = require("../models/SQL/sections");
-const { Users } = require("../models/SQL/users");
+const { Investments } = require("../models/investments");
+const { Roles } = require("../models/roles");
+const { Users } = require("../models/users");
 
 //utils
 const { catchAsync } = require("../utils/catchAsync");
+const { AppError } = require("../utils/appError");
 
 //controllers
 const create = catchAsync(async (req,res,next)=>{
-    const { name,inversion,date,userId,campaignId,sectionId } = req.body;
-    const actualDate = new Date(date);
+    const { user } = req;
+    const { 
+        name,
+        investment,
+        day
+    } = req.body;
+    const actualDate = new Date(day);
 
     let newInvestment
 
     const updateInvestment = await Investments.findOne({
         where:{
             name,
-            date: actualDate
+            day: actualDate
         }
     });
 
     if (updateInvestment) {
         newInvestment = await updateInvestment.update({
-            inversion: parseFloat(updateInvestment.inversion) + parseFloat(inversion)
+            investment: parseFloat(updateInvestment.investment) + parseFloat(investment)
         });
     } else {
         newInvestment = await Investments.create({
             name,
-            inversion,
-            date,
-            userId,
-            campaignId,
-            sectionId
+            investment,
+            day,
+            userId: user.id
         });
     }
 
@@ -44,12 +46,15 @@ const create = catchAsync(async (req,res,next)=>{
 });
 
 const update = catchAsync(async (req,res,next)=>{
-    const { investment } = req;
-    const { inversion } = req.body;
+    const { inversion } = req;
+    const { investment } = req.body;
 
-    await investment.update({
-        inversion,
-    });
+    if (investment) {
+        await inversion.update({
+            investment,
+        });
+    }
+
 
     res.status(201).json({
         status: 'success'
@@ -60,7 +65,7 @@ const deleted = catchAsync(async (req,res,next)=>{
     const { investment } = req;
 
     await investment.update({
-        status: false
+        status: !investment.status
     });
 
     res.status(201).json({
@@ -76,23 +81,58 @@ const getItems = catchAsync(async (req,res,next)=>{
         include: [
             {
                 model: Users,
+                required: false,
+                where:{
+                    status: true
+                },
                 include:{
                     model:Roles,
-                    attributes: ['id','name','status']
+                    required: false,
+                    where:{
+                        status: true
+                    },
+                    attributes: ['id','name','description','createdAt','updatedAt']
                 },
-                attributes: ['id','email','name','last_name','img_profile','status']
-            },
-            {
-                model: Campaigns,
-                attributes: ['id','name','status']
-            },
-            {
-                model: Sections,
-                attributes: ['id','name','status']
+                attributes: ['id','email','name','lastName','createdAt','updatedAt']
             }
         ],
-        attributes: ['id','name','date','createdAt','updatedAt']
+        attributes: ['id','name','day','investment','createdAt','updatedAt']
     });
+
+    res.status(200).json({
+        status: 'success',
+        data
+    })
+});
+
+const getItemsAdmin = catchAsync(async (req,res,next)=>{
+    const data = await Investments.findAll({
+        where:{
+            status: false
+        },
+        include: [
+            {
+                model: Users,
+                required: false,
+                where:{
+                    status: true
+                },
+                include:{
+                    model:Roles,
+                    required: false,
+                    where:{
+                        status: true
+                    }
+                },
+                attributes: ['id','email','name','lastName','status','createdAt','updatedAt']
+            }
+        ],
+        attributes: ['id','name','day','status','createdAt','updatedAt']
+    });
+
+    if (!data.length) {
+        return next(new AppError('Investment not found',404));
+    };
 
     res.status(200).json({
         status: 'success',
@@ -104,5 +144,6 @@ module.exports = {
     create,
     update,
     deleted,
-    getItems
+    getItems,
+    getItemsAdmin,
 };

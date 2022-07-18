@@ -1,8 +1,6 @@
-const { dbConnect } = require('../../config/database');
-const { DataTypes } = require('sequelize');
+const { dbConnect,DataTypes } = require('../config/database');
 
-//Model table
-const Advisers = dbConnect.define('adviser', {
+const Users = dbConnect.define('users', {
     id: {
         primaryKey: true,
         type: DataTypes.INTEGER,
@@ -12,7 +10,7 @@ const Advisers = dbConnect.define('adviser', {
     email: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true
+        unique: true,
     },
     password: {
         type: DataTypes.STRING,
@@ -20,40 +18,29 @@ const Advisers = dbConnect.define('adviser', {
     },
     name: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
     },
-    last_name: {
+    lastName: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
     },
-    userId: {
+    roleId: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        select:false
     },
     campaignId: {
         type: DataTypes.INTEGER,
-        allowNull: false,
-        select:false
+        allowNull: true,
     },
     sectionId: {
         type: DataTypes.INTEGER,
-        allowNull: false,
-        select:false
-    },
-    turnId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        select:false
+        allowNull: true,
     },
     status: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
-        select:false,
-        defaultValue: true
+        defaultValue: true,
     }
 });
 
-module.exports = {
-    Advisers
-};
+module.exports = { Users };

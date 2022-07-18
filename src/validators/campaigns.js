@@ -17,9 +17,10 @@ const checkResult = (req, res, next) => {
 	next();
 };
 
-const campignsValidator = [
+const campaignsValidator = [
 	body('name').notEmpty().withMessage('Name cannot be empty'),
+    body('description').notEmpty().withMessage('Please write a brief description of the campaign'),
 	checkResult,
 ];
 
-module.exports = { campignsValidator };
+module.exports = { campaignsValidator };

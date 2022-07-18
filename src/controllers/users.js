@@ -1,27 +1,25 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { Campaigns } = require('../models/campaigns');
+const { Roles } = require('../models/roles');
+const { Sections } = require('../models/sections');
 
 //models
-const { Campaigns } = require("../models/SQL/campaigns");
-const { Roles } = require("../models/SQL/roles");
-const { Sections } = require("../models/SQL/sections");
-const { Turns } = require("../models/SQL/turns");
-const { Users } = require("../models/SQL/users");
+const { Users } = require('../models/users');
 
 //utils
-const { AppError } = require('../utils/appError');
-const { catchAsync } = require('../utils/catchAsync');
+const { catchAsync } = require("../utils/catchAsync");
 
+//controlers
 const create = catchAsync(async (req,res,next)=>{
     const { 
         email,
         password,
         name,
-        last_name,
+        lastName,
         roleId,
         campaignId,
-        sectionId,
-        turnId
+        sectionId
     } = req.body;
 
 	const salt = await bcrypt.genSalt(12);
@@ -31,11 +29,10 @@ const create = catchAsync(async (req,res,next)=>{
         email,
         password: encryptPass,
         name,
-        last_name,
+        lastName,
         roleId,
         campaignId,
-        sectionId,
-        turnId
+        sectionId
     });
 
 	newUser.password = undefined;
@@ -66,9 +63,16 @@ const login = catchAsync(async (req,res,next)=>{
         return next(new AppError('Invalid password',404));
     };
 
+    const role = await Roles.findOne({
+        where:{
+            id: user.roleId,
+            status: true
+        }
+    });
+
     const token = jwt.sign({ 
         id: user.id,
-        role: user.roleId
+        role: role.name
     },process.env.JWT_SIGN,{
         expiresIn:'24h',
     });
@@ -83,24 +87,44 @@ const update = catchAsync(async (req,res,next)=>{
     const { user } = req;
     const {
         name,
-        last_name,
+        lastName,
         roleId,
         campaignId,
-        sectionId,
-        turnId
+        sectionId
     } = req.body;
 
-    await user.update({
-        name,
-        last_name,
-        roleId,
-        campaignId,
-        sectionId,
-        turnId
-    });
+    if (name) {
+        await user.update({
+            name
+        });
+    };
+
+    if (lastName) {
+        await user.update({
+            lastName
+        });
+    };
+
+    if (roleId) {
+        await user.update({
+            roleId
+        });
+    };
+
+    if (campaignId) {
+        await user.update({
+            campaignId
+        });
+    };
+
+    if (sectionId) {
+        await user.update({
+            sectionId
+        });
+    };
     
     res.status(200).json({
-        status: 'succes',
+        status: 'success',
     });
 });
 
@@ -132,7 +156,7 @@ const updatePassword = catchAsync(async (req,res,next)=>{
     });
     
     res.status(200).json({
-        status: 'succes',
+        status: 'success',
     });
 });
 
@@ -148,7 +172,7 @@ const updatePasswordAdmin = catchAsync(async (req,res,next)=>{
     });
     
     res.status(200).json({
-        status: 'succes',
+        status: 'success',
     });
 });
 
@@ -156,11 +180,11 @@ const deleted = catchAsync(async (req,res,next)=>{
     const { user } = req;
 
     await user.update({
-        status:false
+        status: !user.status
     });
     
     res.status(200).json({
-        status: 'succes',
+        status: 'success',
     });
 });
 
@@ -172,22 +196,70 @@ const getItems = catchAsync(async (req,res,next)=>{
         include: [
             {
                 model: Roles,
-                attributes: ['id','name','createdAt','updatedAt']
+                required: false,
+                where:{
+                    status: true
+                },
+                attributes: ['id','name','description','createdAt','updatedAt']
             },
             {
                 model: Campaigns,
-                attributes: ['id','name','createdAt','updatedAt']
+                required: false,
+                where:{
+                    status: true
+                },
+                attributes: ['id','name','description','createdAt','updatedAt']
             },
             {
                 model: Sections,
-                attributes: ['id','name','createdAt','updatedAt']
-            },
-            {
-                model: Turns,
-                attributes: ['id','name','entrance_time','exit_time','createdAt','updatedAt']
+                required: false,
+                where:{
+                    status: true
+                },
+                attributes: ['id','name','description','createdAt','updatedAt']
             }
         ],
-        attributes: ['id','email','name','last_name','img_profile','createdAt','updatedAt']
+        attributes: ['id','email','name','lastName','createdAt','updatedAt']
+    });
+
+    res.status(200).json({
+        status: 'success',
+        data
+    });
+});
+
+const getItemsAdmin = catchAsync(async (req,res,next)=>{
+    const data = await Users.findAll({
+        where:{
+            status: false
+        },
+        include: [
+            {
+                model: Roles,
+                required: false,
+                where:{
+                    status: true
+                },
+                attributes: ['id','name','description','createdAt','updatedAt']
+            },
+            {
+                model: Campaigns,
+                required: false,
+                where:{
+                    status: true
+                },
+                attributes: ['id','name','description','createdAt','updatedAt']
+            },
+            {
+                model: Sections,
+                required: false,
+                where:{
+                    status: true
+                },
+                attributes: ['id','name','description','createdAt','updatedAt']
+            }
+        ],
+        attributes: ['id','email','name','lastName','status','createdAt','updatedAt']
     });
 
     res.status(200).json({
@@ -208,13 +280,11 @@ const getItem = catchAsync(async (req,res,next)=>{
 });
 
 const getItemQuery = catchAsync(async (req,res,next)=>{
-    const { roleId,campaignId,sectionId,turnId} = req.query;
-    const data = {
+    const { 
         roleId,
         campaignId,
-        sectionId,
-        turnId
-    }
+        sectionId
+    } = req.query;
 
     let users = []
 
@@ -225,19 +295,27 @@ const getItemQuery = catchAsync(async (req,res,next)=>{
 		include: [
 			{
 				model: Roles,
-				attributes: ['id','name','createdAt','updatedAt']
+                required: false,
+                where:{
+                    status: true
+                },
+				attributes: ['id','name','description','createdAt','updatedAt']
 			},
 			{
 				model: Campaigns,
-				attributes: ['id','name','createdAt','updatedAt']
+                required: false,
+                where:{
+                    status: true
+                },
+				attributes: ['id','name','description','createdAt','updatedAt']
 			},
 			{
 				model: Sections,
-				attributes: ['id','name','createdAt','updatedAt']
-			},
-			{
-				model: Turns,
-				attributes: ['id','name','entrance_time','exit_time','createdAt','updatedAt']
+                required: false,
+                where:{
+                    status: true
+                },
+				attributes: ['id','name','description','createdAt','updatedAt']
 			}
 		]
 	});
@@ -247,33 +325,25 @@ const getItemQuery = catchAsync(async (req,res,next)=>{
         user.status = undefined
     });
 
-    if (data.roleId) {
+    if (roleId) {
         searchUsers.map(user=>{
-            if (parseInt(user.roleId)===parseInt(data.roleId)) {
+            if (parseInt(user.roleId)===parseInt(roleId)) {
                 users.push(user)
             }
         });
     };
 
-    if (data.campaignId) {
+    if (campaignId) {
         searchUsers.map(user=>{
-            if (parseInt(user.campaignId)===parseInt(data.campaignId)) {
+            if (parseInt(user.campaignId)===parseInt(campaignId)) {
                 users.push(user)
             }
         });
     };
 
-    if (data.sectionId) {
+    if (sectionId) {
         searchUsers.map(user=>{
-            if (parseInt(user.sectionId)===parseInt(data.sectionId)) {
-                users.push(user)
-            }
-        });
-    };
-
-    if (data.turnId) {
-        searchUsers.map(user=>{
-            if (parseInt(user.turnId)===parseInt(data.turnId)) {
+            if (parseInt(user.sectionId)===parseInt(sectionId)) {
                 users.push(user)
             }
         });
@@ -282,8 +352,7 @@ const getItemQuery = catchAsync(async (req,res,next)=>{
     users.map(user=>{
         user.roleId = undefined,
         user.campaignId = undefined,
-        user.sectionId = undefined,
-        user.turnId = undefined
+        user.sectionId = undefined
     });
 
     res.status(200).json({
@@ -300,6 +369,7 @@ module.exports = {
     updatePasswordAdmin,
     deleted,
     getItems,
+    getItemsAdmin,
     getItem,
     getItemQuery
 }

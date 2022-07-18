@@ -1,33 +1,20 @@
 const multer = require('multer');
 
 //models
-const { Storage } = require('../models/SQL/storage');
+const { Files } = require('../models/files');
 
 //utils
 const { catchAsync } = require('../utils/catchAsync');
 const { AppError } = require('../utils/appError');
 
-const storage = multer.diskStorage({
-    destination: function (req,file,cb){
-        const { userSession } = req;
-
-        const pathstorage = `${__dirname}/../storage/${userSession.role}`
-        
-        cb(null,pathstorage);
-    },
-    filename: function (req,file,cb){
-        const ext = file.originalname.split('.').pop();
-        const filename = `file-${Date.now()}.${ext}`;
-        cb(null,filename);
-    }
-});
+const storage = multer.memoryStorage();
 
 const uploadMiddleware = multer({ storage });
 
 const fileExist = catchAsync(async (req,res,next)=>{
     const { id } = req.params;
 
-    const file = await Storage.findOne({
+    const file = await Files.findOne({
         where:{
             id,
             status: true

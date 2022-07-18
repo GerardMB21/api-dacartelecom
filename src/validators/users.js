@@ -1,10 +1,9 @@
 const { body, validationResult } = require('express-validator');
 
 //models
-const { Campaigns } = require('../models/SQL/campaigns');
-const { Roles } = require('../models/SQL/roles');
-const { Sections } = require('../models/SQL/sections');
-const { Turns } = require('../models/SQL/turns');
+const { Campaigns } = require('../models/campaigns');
+const { Roles } = require('../models/roles');
+const { Sections } = require('../models/sections');
 
 const { AppError } = require('../utils/appError');
 
@@ -24,7 +23,7 @@ const checkResult = (req, res, next) => {
 };
 
 const checkRole = async (req,res,next)=>{
-	const { roleId, turnId, campaignId, sectionId } = req.body
+	const { roleId, campaignId, sectionId } = req.body
 
 	const role = await Roles.findOne({ where: {
 		id:roleId,
@@ -33,15 +32,6 @@ const checkRole = async (req,res,next)=>{
 
 	if (!role) {
 		return next(new AppError('Role Id invalid try other Id',400));
-	};
-
-	const turn = await Turns.findOne({ where: {
-		id: turnId,
-		status:true
-	} })
-
-	if (!turn) {
-		return next(new AppError('Turn Id invalid try other Id',400));
 	};
 
 	if (role.name === "supervisor") {
@@ -77,7 +67,7 @@ const checkRole = async (req,res,next)=>{
 
 const userValidator = [
 	body('name').notEmpty().withMessage('Name cannot be empty'),
-    body('last_name').notEmpty().withMessage('Last name cannot be empty'),
+    body('lastName').notEmpty().withMessage('Last name cannot be empty'),
 	body('email').isEmail().withMessage('Must provide a valid email'),
 	body('password')
 		.isLength({ min: 5 })
@@ -85,16 +75,6 @@ const userValidator = [
 		.isAlphanumeric()
 		.withMessage('Password must contain letters and numbers'),
 	body('roleId').isNumeric().withMessage('Invalid parameter, try with a number'),
-    body('turnId').isNumeric().withMessage('Invalid parameter, try with a number'),
-	checkResult,
-	checkRole,
-];
-
-const updateValidator = [
-	body('name').notEmpty().withMessage('Name cannot be empty'),
-    body('last_name').notEmpty().withMessage('Last name cannot be empty'),
-	body('roleId').isNumeric().withMessage('Invalid parameter, try with a number'),
-    body('turnId').isNumeric().withMessage('Invalid parameter, try with a number'),
 	checkResult,
 	checkRole,
 ];
@@ -110,6 +90,5 @@ const passwordValidator = [
 
 module.exports = { 
 	userValidator,
-	updateValidator,
 	passwordValidator
  };

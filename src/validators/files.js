@@ -1,5 +1,6 @@
 const { body, validationResult } = require('express-validator');
 
+//utils
 const { AppError } = require('../utils/appError');
 
 const checkResult = (req, res, next) => {
@@ -17,11 +18,11 @@ const checkResult = (req, res, next) => {
 	next();
 };
 
-const turnsValidator = [
-	body('name').notEmpty().withMessage('Name cannot be empty'),
-	body('entrance_time').notEmpty().withMessage('Entrance time cannot be empty'),
-	body('exit_time').notEmpty().withMessage('Exit time cannot be empty'),
+const filesValidator = [
+	body('fileName').notEmpty().withMessage('Name cannot be empty'),
 	checkResult,
 ];
 
-module.exports = { turnsValidator };
+module.exports = { 
+	filesValidator,
+};

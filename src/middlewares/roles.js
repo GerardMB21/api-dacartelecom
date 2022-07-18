@@ -1,7 +1,7 @@
-//Models
-const { Roles } = require('../models/SQL/roles');
+//models
+const { Roles } = require('../models/roles');
 
-// Utils
+//utils
 const { AppError } = require('../utils/appError');
 const { catchAsync } = require('../utils/catchAsync');
 
@@ -22,6 +22,23 @@ const roleExist = catchAsync(async (req,res,next)=>{
 	next()
 });
 
+const roleStatus = catchAsync(async (req,res,next)=>{
+	const { id } = req.params;
+
+	const role = await Roles.findOne({ where:{
+		id
+	} });
+
+	if (!role) {
+		return next(new AppError('Role not found',404));
+	}
+
+	req.role = role
+
+	next()
+});
+
 module.exports = {
-	roleExist
+	roleExist,
+	roleStatus
 };

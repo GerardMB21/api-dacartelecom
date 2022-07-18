@@ -1,8 +1,6 @@
-const { dbConnect } = require('../../config/database');
-const { DataTypes } = require('sequelize');
+const { dbConnect,DataTypes } = require('../config/database');
 
-//Model table
-const Investments = dbConnect.define('investment', {
+const Advisers = dbConnect.define('advisers', {
     id: {
         primaryKey: true,
         type: DataTypes.INTEGER,
@@ -13,33 +11,27 @@ const Investments = dbConnect.define('investment', {
         type: DataTypes.STRING,
         allowNull: false,
     },
-    inversion: {
-        type: DataTypes.DECIMAL,
-        allowNull: false,
-    },
-    date: {
-        type: DataTypes.DATE,
+    lastName: {
+        type: DataTypes.STRING,
         allowNull: false,
     },
     userId: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: false,
     },
     campaignId: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: false,
     },
     sectionId: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: false,
     },
     status: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
-        defaultValue: true
+        defaultValue: true,
     }
 });
 
-module.exports = {
-    Investments
-};
+module.exports = { Advisers };

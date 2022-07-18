@@ -1,9 +1,8 @@
 // Models
-const { Campaigns } = require('../models/SQL/campaigns');
-const { Roles } = require('../models/SQL/roles');
-const { Sections } = require('../models/SQL/sections');
-const { Turns } = require('../models/SQL/turns');
-const { Users } = require('../models/SQL/users');
+const { Campaigns } = require('../models/campaigns');
+const { Roles } = require('../models/roles');
+const { Sections } = require('../models/sections');
+const { Users } = require('../models/users');
 
 // Utils
 const { AppError } = require('../utils/appError');
@@ -20,22 +19,73 @@ const userExists = catchAsync(async (req, res, next) => {
 		include: [
 			{
 				model: Roles,
+                required: false,
+                where:{
+                    status: true
+                },
 				attributes: ['id','name','createdAt','updatedAt']
 			},
 			{
 				model: Campaigns,
+                required: false,
+                where:{
+                    status: true
+                },
 				attributes: ['id','name','createdAt','updatedAt']
 			},
 			{
 				model: Sections,
+                required: false,
+                where:{
+                    status: true
+                },
+				attributes: ['id','name','createdAt','updatedAt']
+			}
+		]
+	});
+
+	if (!user) {
+		return next(new AppError('User not found', 404));
+	};
+
+	req.user = user;
+
+	next();
+});
+
+const userstatus = catchAsync(async (req, res, next) => {
+	const { id } = req.params;
+
+	const user = await Users.findOne({ 
+		where: { 
+			id
+		},
+		include: [
+			{
+				model: Roles,
+                required: false,
+                where:{
+                    status: true
+                },
 				attributes: ['id','name','createdAt','updatedAt']
 			},
 			{
-				model: Turns,
-				attributes: ['id','name','entrance_time','exit_time','createdAt','updatedAt']
+				model: Campaigns,
+                required: false,
+                where:{
+                    status: true
+                },
+				attributes: ['id','name','createdAt','updatedAt']
+			},
+			{
+				model: Sections,
+                required: false,
+                where:{
+                    status: true
+                },
+				attributes: ['id','name','createdAt','updatedAt']
 			}
-		],
-        attributes: ['id','email','password','name','last_name','img_profile','createdAt','updatedAt']
+		]
 	});
 
 	if (!user) {
@@ -49,4 +99,5 @@ const userExists = catchAsync(async (req, res, next) => {
 
 module.exports = { 
     userExists,
+	userstatus
 };

@@ -1,12 +1,9 @@
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-
 //models
-const { Advisers } = require('../models/SQL/advisers');
-const { Users } = require('../models/SQL/users');
-const { Campaigns } = require('../models/SQL/campaigns');
-const { Sections } = require('../models/SQL/sections');
-const { Turns } = require('../models/SQL/turns');
+const { Advisers } = require('../models/advisers');
+const { Users } = require('../models/users');
+const { Campaigns } = require('../models/campaigns');
+const { Sections } = require('../models/sections');
+const { Roles } = require('../models/roles');
 
 //utils
 const { catchAsync } = require('../utils/catchAsync');
@@ -14,69 +11,23 @@ const { AppError } = require('../utils/appError');
 
 //controllers
 const create = catchAsync(async (req,res,next)=>{
-
-    const { 
-        email,
-        password,
+    const { user } = req;
+    const {
         name,
-        last_name,
-        userId,
-        campaignId,
-        sectionId,
-        turnId
+        lastName
     } = req.body;
 
-	const salt = await bcrypt.genSalt(12);
-	const encryptPass = await bcrypt.hash(password,salt);
-
     const newAdviser = await Advisers.create({
-        email,
-        password: encryptPass,
         name,
-        last_name,
-        userId,
-        campaignId,
-        sectionId,
-        turnId
-    })
-
-	newAdviser.password = undefined
+        lastName,
+        userId: user.id,
+        campaignId: user.campaignId,
+        sectionId: user.sectionId
+    });
     
     res.status(201).json({
         status: 'succes',
         newAdviser
-    })
-});
-
-const login = catchAsync(async (req,res,next)=>{
-    const { email,password } = req.body;
-
-    const user = await Advisers.findOne({
-        where:{
-            email,
-            status: true
-        }
-    });
-
-    if (!user) {
-        return next(new AppError('Adviser not exist',404));
-    };
-
-    const validPass = await bcrypt.compare(password,user.password);
-
-    if (!validPass) {
-        return next(new AppError('Invalid password',404));
-    };
-
-    const token = jwt.sign({ 
-        id: user.id,
-    },process.env.JWT_SIGN,{
-        expiresIn:'24h',
-    });
-
-    res.status(200).json({
-        status:'succes',
-        token
     });
 });
 
@@ -84,69 +35,52 @@ const update = catchAsync(async (req,res,next)=>{
     const { adviser } = req;
     const {
         name,
-        last_name,
-        userId,
-        campaignId,
-        sectionId,
-        turnId
+        lastName,
+        userId
     } = req.body;
 
-    await adviser.update({
-        name,
-        last_name,
-        userId,
-        campaignId,
-        sectionId,
-        turnId
-    });
-    
-    res.status(200).json({
-        status: 'succes',
-    });
-});
-
-const updatePassword = catchAsync(async (req,res,next)=>{
-    const { adviser,userSession } = req;
-    const { last_password,password } = req.body;
-
-    if (parseInt(adviser.id) !== parseInt(userSession.id)) {
-        return next(new AppError('You dont the owner this count',403));
+    if (name) {
+        await adviser.update({
+            name
+        });
     };
 
-    const validPass = await bcrypt.compare(last_password,adviser.password);
-
-    if (!validPass) {
-        return next(new AppError('Invalid password',404));
+    if (lastName) {
+        await adviser.update({
+            lastName
+        });
     };
 
-    const passRepeat = await bcrypt.compare(password,adviser.password);
+    if (userId) {
 
-    if (passRepeat) {
-        return next(new AppError('Password same as your previous password',404))
-    }
+        const user = await Users.findOne({
+            where:{
+                id: userId,
+                status: true
+            }
+        });
 
-	const salt = await bcrypt.genSalt(12);
-	const encryptPass = await bcrypt.hash(password,salt);
+        if (!user) {
+            return next(new AppError('User Id invalid try again',404));
+        };
 
-    await adviser.update({
-        password: encryptPass,
-    });
-    
-    res.status(200).json({
-        status: 'succes',
-    });
-});
+        const role = await Roles.findOne({
+            where:{
+                id: user.roleId,
+                status: true
+            }
+        });
 
-const updatePasswordAdmin = catchAsync(async (req,res,next)=>{
-    const { adviser } = req;
-    const { password } = req.body;
+        if (role.name !== 'supervisor') {
+            return next(new AppError('This user dont supervisor',404));
+        };
 
-	const salt = await bcrypt.genSalt(12);
-	const encryptPass = await bcrypt.hash(password,salt);
-
-    await adviser.update({
-        password: encryptPass,
-    });
+        await adviser.update({
+            userId,
+            campaignId: user.campaignId,
+            sectionId: user.sectionId
+        });
+    };
     
     res.status(200).json({
         status: 'succes',
@@ -157,7 +91,7 @@ const deleted = catchAsync(async (req,res,next)=>{
     const { adviser } = req;
 
     await adviser.update({
-        status: false
+        status: !adviser.status
     });
 
     res.status(201).json({
@@ -173,32 +107,59 @@ const getItems = catchAsync(async (req,res,next)=>{
         include:[
             {
                 model:Users,
+                required: false,
+                where:{
+                    status: true
+                },
                 include:[
                     {
                         model:Campaigns,
+                        required: false,
+                        where:{
+                            status: true
+                        },
                         attributes: ['id','name','createdAt','updatedAt']
                     },
                     {
                         model:Sections,
+                        required: false,
+                        where:{
+                            status: true
+                        },
                         attributes: ['id','name','createdAt','updatedAt']
                     },
                 ],
-                attributes: ['id','email','name','last_name','img_profile','createdAt','updatedAt']
-            },
-            {
-                model:Campaigns,
-                attributes: ['id','name','createdAt','updatedAt']
-            },
-            {
-                model:Sections,
-                attributes: ['id','name','createdAt','updatedAt']
-            },
-            {
-                model:Turns,
-                attributes: ['id','name','entrance_time','exit_time','createdAt','updatedAt']
+                attributes: ['id','email','name','lastName','createdAt','updatedAt']
             }
         ],
-        attributes: ['id','email','name','last_name','img_profile','createdAt','updatedAt']
+        attributes: ['id','name','lastName','createdAt','updatedAt']
+    });
+
+    res.status(201).json({
+        status: 'success',
+        data
+    });
+});
+
+const getItemsAdmin = catchAsync(async (req,res,next)=>{
+    const data = await Advisers.findAll({
+        where:{
+            status: false
+        },
+        include:[
+            {
+                model:Users,
+                include:[
+                    {
+                        model:Campaigns,
+                    },
+                    {
+                        model:Sections,
+                    },
+                ],
+                attributes: ['id','email','name','lastName','roleId','campaignId','sectionId','status','createdAt','updatedAt']
+            }
+        ],
     });
 
     res.status(201).json({
@@ -210,8 +171,6 @@ const getItems = catchAsync(async (req,res,next)=>{
 const getItem = catchAsync(async (req,res,next)=>{
     const { adviser } = req;
 
-    adviser.password = undefined;
-
     res.status(201).json({
         status: 'success',
         adviser
@@ -220,12 +179,9 @@ const getItem = catchAsync(async (req,res,next)=>{
 
 module.exports = { 
     create,
-    login,
     update,
     deleted,
     getItems,
+    getItemsAdmin,
     getItem,
-    updatePassword,
-    updatePasswordAdmin
 }
-

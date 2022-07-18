@@ -1,27 +1,26 @@
 const express = require('express');
 
 //controllers
-const { create, update, deleted, getItems, getItem, updatePassword, login, updatePasswordAdmin } = require('../controllers/advisers');
+const { create, update, deleted, getItems, getItem, getItemsAdmin } = require('../controllers/advisers');
 
 //utils
-const { verifyToken, onlyAdmin, verifyTokenAdviser } = require('../utils/tokenVerify');
+const { verifyToken, onlyAdmin } = require('../utils/tokenVerify');
 
 //middlewares
-const { adviserExists } = require('../middlewares/advisers');
+const { adviserExists, adviserStatus } = require('../middlewares/advisers');
+const { userExists } = require('../middlewares/users');
 
 //validators
-const { adviserValidator, updateValidator, passwordValidator } = require('../validators/advisers');
+const { adviserValidator } = require('../validators/advisers');
 
 const advisersRouter = express.Router();
 
 // htttp://localhost:port/api/v1/roles GET,POST,DELET,PUT
-advisersRouter.post("/create", verifyToken, onlyAdmin, adviserValidator,create);
-advisersRouter.post("/login",login);
-advisersRouter.patch("/update/:id", verifyToken, onlyAdmin, adviserExists, updateValidator,update);
-advisersRouter.patch("/update/password/:id", verifyTokenAdviser, adviserExists, passwordValidator,updatePasswordAdmin);
-advisersRouter.patch("/update/password/admin/:id", verifyToken, onlyAdmin, adviserExists, passwordValidator,updatePassword);
-advisersRouter.delete("/delete/:id", verifyToken, onlyAdmin, adviserExists,deleted);
-advisersRouter.get("/", verifyToken,getItems);
-advisersRouter.get("/:id", verifyToken, adviserExists,getItem);
+advisersRouter.post("/create/:id", verifyToken, onlyAdmin, userExists, adviserValidator,create);
+advisersRouter.patch("/update/:adviserId", verifyToken, onlyAdmin, adviserExists,update);
+advisersRouter.delete("/delete/:adviserId", verifyToken, onlyAdmin, adviserStatus,deleted);
+advisersRouter.get("/",getItems);
+advisersRouter.get("/:adviserId", verifyToken, adviserExists,getItem);
+advisersRouter.get("/only/admin", verifyToken, onlyAdmin,getItemsAdmin);
 
 module.exports = { advisersRouter };

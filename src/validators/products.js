@@ -1,8 +1,8 @@
 const { body, validationResult } = require('express-validator');
 
 //models
-const { Campaigns } = require('../models/SQL/campaigns');
-const { Sections } = require('../models/SQL/sections');
+const { Campaigns } = require('../models/campaigns');
+const { Sections } = require('../models/sections');
 
 //utils
 const { AppError } = require('../utils/appError');
@@ -30,7 +30,7 @@ const checkCampSect = async (req,res,next)=>{
 			id: campaignId,
 			status: true
 		}
-	})
+	});
 
 	if (!campaign) {
 		return next(new AppError('Campaign Id invalid try other Id',404));
@@ -41,29 +41,28 @@ const checkCampSect = async (req,res,next)=>{
 			id: sectionId,
 			status: true
 		}
-	})
+	});
 
 	if (!section) {
 		return next(new AppError('Section Id invalid try other Id',404));
 	};
+
+    if (parseInt(section.campaignId) !== parseInt(campaign.id)) {
+        return next(new AppError('This section does not belong to this campaign'))
+    }
 
 	next()
 };
 
 const productsValidator = [
 	body('name').notEmpty().withMessage('Name cannot be empty'),
+    body('description').notEmpty().withMessage('Please write a brief description of the role'),
     body('campaignId').isNumeric().withMessage('Invalid parameter, try with a number'),
     body('sectionId').isNumeric().withMessage('Invalid parameter, try with a number'),
 	checkResult,
 	checkCampSect,
 ];
 
-const updateValidator = [
-	body('name').notEmpty().withMessage('Name cannot be empty'),
-	checkResult,
-];
-
 module.exports = { 
-	productsValidator,
-	updateValidator
+	productsValidator
 };

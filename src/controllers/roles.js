@@ -1,30 +1,39 @@
 //models
-const { Roles } = require('../models/SQL/roles');
+const { Roles } = require("../models/roles");
 
 //utils
-const { catchAsync } = require('../utils/catchAsync');
+const { catchAsync } = require("../utils/catchAsync");
 
 //controllers
 const create = catchAsync(async (req,res,next)=>{
-    const { name } = req.body;
-    
-    const roles = await Roles.create({
-        name
-    })
+    const { name,description } = req.body;
+
+    const newRole = await Roles.create({
+        name,
+        description
+    });
 
     res.status(200).json({
-        status: 'succes',
-        roles
-    })
+        status: 'success',
+        newRole
+    });
 });
 
 const update = catchAsync(async (req,res,next)=>{
     const { role } = req;
-    const { name } = req.body;
+    const { name,description } = req.body;
 
-    await role.update({
-        name
-    });
+    if (name) {
+        await role.update({
+            name
+        });
+    };
+
+    if (description) {
+        await role.update({
+            description
+        });
+    };
 
     res.status(201).json({
         status: 'success'
@@ -35,7 +44,7 @@ const deleted = catchAsync(async (req,res,next)=>{
     const { role } = req;
 
     await role.update({
-        status: false
+        status: !role.status
     });
 
     res.status(201).json({
@@ -44,21 +53,17 @@ const deleted = catchAsync(async (req,res,next)=>{
 });
 
 const getItems = catchAsync(async (req,res,next)=>{
-    const data = await Roles.findAll({
-        where: {
-            status: true
-        }
-    });
+    const data = await Roles.findAll();
 
-    res.status(200).json({
+    res.status(201).json({
         status: 'success',
         data
     });
-}) 
+});
 
 module.exports = {
     create,
     update,
     deleted,
-    getItems
-}
+    getItems,
+};

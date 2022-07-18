@@ -1,16 +1,32 @@
 //Models
-const { Investments } = require('../models/SQL/investments');
+const { Investments } = require('../models/investments');
 
 // Utils
 const { AppError } = require('../utils/appError');
 const { catchAsync } = require('../utils/catchAsync');
 
 const investmentExist = catchAsync(async (req,res,next)=>{
-	const { id } = req.params;
+	const { investmentId } = req.params;
 
 	const investment = await Investments.findOne({ where:{
-		id,
+		id: investmentId,
 		status: true
+	} });
+
+	if (!investment) {
+		return next(new AppError('Investment not found',404));
+	}
+
+	req.inversion = investment
+
+	next()
+});
+
+const investmentStatus = catchAsync(async (req,res,next)=>{
+	const { investmentId } = req.params;
+
+	const investment = await Investments.findOne({ where:{
+		id: investmentId
 	} });
 
 	if (!investment) {
@@ -23,5 +39,6 @@ const investmentExist = catchAsync(async (req,res,next)=>{
 });
 
 module.exports = {
-	investmentExist
+	investmentExist,
+    investmentStatus
 };

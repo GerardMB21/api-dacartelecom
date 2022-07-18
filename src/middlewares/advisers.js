@@ -1,52 +1,144 @@
 // Models
-const { Advisers } = require('../models/SQL/advisers');
-const { Campaigns } = require('../models/SQL/campaigns');
-const { Roles } = require('../models/SQL/roles');
-const { Sections } = require('../models/SQL/sections');
-const { Turns } = require('../models/SQL/turns');
-const { Users } = require('../models/SQL/users');
+const { Advisers } = require('../models/advisers');
+const { Campaigns } = require('../models/campaigns');
+const { Roles } = require('../models/roles');
+const { Sections } = require('../models/sections');
+const { Users } = require('../models/users');
 
 // Utils
 const { AppError } = require('../utils/appError');
 const { catchAsync } = require('../utils/catchAsync');
 
 const adviserExists = catchAsync(async (req, res, next) => {
-	const { id } = req.params;
+	const { adviserId } = req.params;
 
 	const adviser = await Advisers.findOne({ 
 		where: { 
-			id,
+			id: adviserId,
 			status:true
 		},
 		include: [
 			{
 				model: Users,
+                required: false,
+                where:{
+                    status: true
+                },
                 include:[
                     {
+                        model:Roles,
+                        required: false,
+                        where:{
+                            status: true
+                        },
+                        attributes: ['id','name','description','createdAt','updatedAt']
+                    },
+                    {
                         model:Campaigns,
+                        required: false,
+                        where:{
+                            status: true
+                        },
                         attributes: ['id','name','createdAt','updatedAt']
                     },
                     {
                         model:Sections,
+                        required: false,
+                        where:{
+                            status: true
+                        },
                         attributes: ['id','name','createdAt','updatedAt']
                     },
                 ],
-                attributes: ['id','email','name','last_name','img_profile','createdAt','updatedAt']
+                attributes: ['id','email','name','lastName','createdAt','updatedAt']
 			},
 			{
 				model: Campaigns,
-				attributes: ['id','name','createdAt','updatedAt']
+                required: false,
+                where:{
+                    status: true
+                },
+				attributes: ['id','name','description','createdAt','updatedAt']
 			},
 			{
 				model: Sections,
-				attributes: ['id','name','createdAt','updatedAt']
+                required: false,
+                where:{
+                    status: true
+                },
+				attributes: ['id','name','description','createdAt','updatedAt']
+			}
+		]
+	});
+
+	if (!adviser) {
+		return next(new AppError('Adviser not found', 404));
+	};
+
+	req.adviser = adviser;
+
+	next();
+});
+
+const adviserStatus = catchAsync(async (req, res, next) => {
+	const { adviserId } = req.params;
+
+	const adviser = await Advisers.findOne({ 
+		where: { 
+			id: adviserId,
+		},
+		include: [
+			{
+				model: Users,
+                required: false,
+                where:{
+                    status: true
+                },
+                include:[
+                    {
+                        model:Roles,
+                        required: false,
+                        where:{
+                            status: true
+                        },
+                        attributes: ['id','name','description','createdAt','updatedAt']
+                    },
+                    {
+                        model:Campaigns,
+                        required: false,
+                        where:{
+                            status: true
+                        },
+                        attributes: ['id','name','createdAt','updatedAt']
+                    },
+                    {
+                        model:Sections,
+                        required: false,
+                        where:{
+                            status: true
+                        },
+                        attributes: ['id','name','createdAt','updatedAt']
+                    },
+                ],
+                attributes: ['id','email','name','lastName','createdAt','updatedAt']
 			},
 			{
-				model: Turns,
-				attributes: ['id','name','entrance_time','exit_time','createdAt','updatedAt']
+				model: Campaigns,
+                required: false,
+                where:{
+                    status: true
+                },
+				attributes: ['id','name','description','createdAt','updatedAt']
+			},
+			{
+				model: Sections,
+                required: false,
+                where:{
+                    status: true
+                },
+				attributes: ['id','name','description','createdAt','updatedAt']
 			}
-		],
-        attributes: ['id','email','password','name','last_name','img_profile','createdAt','updatedAt']
+		]
 	});
 
 	if (!adviser) {
@@ -60,4 +152,5 @@ const adviserExists = catchAsync(async (req, res, next) => {
 
 module.exports = { 
     adviserExists,
+    adviserStatus
 };
