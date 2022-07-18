@@ -5,7 +5,6 @@ const helmet = require('helmet');
 const compression = require('compression');
 const morgan = require('morgan');
 const cors = require('cors');
-const path = require('path');
 const app = express();
 
 //Routers
@@ -25,7 +24,6 @@ const { AppError } = require('./utils/appError');
 
 app.use(cors());
 app.use(express.json());
-app.use('/',express.static(path.join(__dirname,'storage')));
 
 //limiter
 const limiter = rateLimit({
