@@ -12,6 +12,7 @@ const { AppError } = require("../utils/appError");
 
 //controllers
 const create = catchAsync(async (req,res,next)=>{
+    console.log('puta');
     const { adviser } = req;
     const { adviserId } = req.params;
     // const { 
