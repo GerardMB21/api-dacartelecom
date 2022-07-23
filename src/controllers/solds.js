@@ -13,10 +13,10 @@ const { AppError } = require("../utils/appError");
 //controllers
 const create = catchAsync(async (req,res,next)=>{
     const { adviser } = req;
+    const { adviserId } = req.params;
     const { 
             sold,
             dayTime,
-            adviserId,
             productId
         } = req.body;
 
@@ -33,25 +33,27 @@ const create = catchAsync(async (req,res,next)=>{
         }
     });
 
-    if (!newSold) {
-        newSold = await Solds.create({
-            sold,
-            dayTime,
-            adviserId,
-            userId: adviser.userId,
-            campaignId: adviser.campaignId,
-            sectionId: adviser.sectionId,
-            productId
-        });
-    } else {
-        await newSold.update({
-            sold: parseInt(newSold.sold) + parseInt(sold)
-        })
-    };
+    console.log(adviser);
+
+    // if (!newSold) {
+    //     newSold = await Solds.create({
+    //         sold,
+    //         dayTime,
+    //         adviserId,
+    //         userId: adviser.userId,
+    //         campaignId: adviser.campaignId,
+    //         sectionId: adviser.sectionId,
+    //         productId
+    //     });
+    // } else {
+    //     await newSold.update({
+    //         sold: parseInt(newSold.sold) + parseInt(sold)
+    //     })
+    // };
 
     res.status(200).json({
         status: 'success',
-        newSold
+        //newSold
     });
 });
 
