@@ -313,6 +313,7 @@ const getQuery = catchAsync(async (req,res,next)=>{
             sales = parameters;
         };
 
+        console.log(data.sectionId);
         if (data.sectionId) {
             parameters = [];
             sales.map(sale=>{
