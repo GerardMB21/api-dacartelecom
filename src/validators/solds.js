@@ -53,7 +53,6 @@ const checkParameters = async (req,res,next)=>{
 const soldsValidator = [
 	body('sold').isNumeric().withMessage('Invalid sold try again'),
     body('dayTime').notEmpty().withMessage('Day and Time cannot be empty'),
-    body('adviserId').isNumeric().withMessage('Invalid parameter, try with a number'),
     body('productId').isNumeric().withMessage('Invalid parameter, try with a number'),
 	checkResult,
 	checkParameters,
