@@ -272,8 +272,7 @@ const getQuery = catchAsync(async (req,res,next)=>{
                 },
                 attributes: ['id','description','name','status']
             }
-        ],
-        attributes: ['id','sold','dayTime','adviserId','userId','campaignId','sectionId','productId','createdAt','updatedAt']
+        ]
     });
 
     const data = {
@@ -317,7 +316,7 @@ const getQuery = catchAsync(async (req,res,next)=>{
         if (data.sectionId) {
             parameters = [];
             sales.map(sale=>{
-                console.log('proob');
+                console.log(sale.sectionId);
                 if (sale.sectionId === data.sectionId) {
                     parameters.push(sale)
                 }
