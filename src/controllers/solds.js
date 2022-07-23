@@ -316,7 +316,7 @@ const getQuery = catchAsync(async (req,res,next)=>{
         if (data.sectionId) {
             parameters = [];
             sales.map(sale=>{
-                console.log(sale.sectionId);
+                console.log(sale.dataValues);
                 if (sale.sectionId === data.sectionId) {
                     parameters.push(sale)
                 }
