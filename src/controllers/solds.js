@@ -14,17 +14,17 @@ const { AppError } = require("../utils/appError");
 const create = catchAsync(async (req,res,next)=>{
     const { adviser } = req;
     const { adviserId } = req.params;
-    const { 
-            sold,
-            dayTime,
-            productId
-        } = req.body;
+    // const { 
+    //         sold,
+    //         dayTime,
+    //         productId
+    //     } = req.body;
 
-    const actualDay = new Date(dayTime);
+    //const actualDay = new Date(dayTime);
 
     console.log(adviser);
 
-    let newSold;
+    //let newSold;
 
     // newSold = await Solds.findOne({
     //     where:{
