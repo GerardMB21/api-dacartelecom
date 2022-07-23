@@ -317,7 +317,7 @@ const getQuery = catchAsync(async (req,res,next)=>{
         if (data.sectionId) {
             parameters = [];
             sales.map(sale=>{
-                console.log(sale);
+                console.log('proob');
                 if (sale.sectionId === data.sectionId) {
                     parameters.push(sale)
                 }
