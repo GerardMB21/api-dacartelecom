@@ -74,7 +74,6 @@ const adviserExists = catchAsync(async (req, res, next) => {
 	if (!adviser) {
 		return next(new AppError('Adviser not found', 404));
 	};
-    console.log(adviser);
 
 	req.adviser = adviser;
 
