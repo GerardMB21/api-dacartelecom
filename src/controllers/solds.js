@@ -22,18 +22,18 @@ const create = catchAsync(async (req,res,next)=>{
 
     const actualDay = new Date(dayTime);
 
+    console.log(adviser);
+
     let newSold;
 
-    newSold = await Solds.findOne({
-        where:{
-            dayTime: actualDay,
-            adviserId,
-            productId,
-            status: true
-        }
-    });
-
-    console.log(adviser);
+    // newSold = await Solds.findOne({
+    //     where:{
+    //         dayTime: actualDay,
+    //         adviserId,
+    //         productId,
+    //         status: true
+    //     }
+    // });
 
     // if (!newSold) {
     //     newSold = await Solds.create({
