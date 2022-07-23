@@ -11,7 +11,6 @@ const { catchAsync } = require('../utils/catchAsync');
 
 const adviserExists = catchAsync(async (req, res, next) => {
 	const { adviserId } = req.params;
-    console.log(adviserId);
 
 	const adviser = await Advisers.findOne({ 
 		where: { 
@@ -75,6 +74,7 @@ const adviserExists = catchAsync(async (req, res, next) => {
 	if (!adviser) {
 		return next(new AppError('Adviser not found', 404));
 	};
+    console.log(adviser);
 
 	req.adviser = adviser;
 
