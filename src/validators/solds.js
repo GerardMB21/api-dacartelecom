@@ -23,7 +23,8 @@ const checkResult = (req, res, next) => {
 };
 
 const checkParameters = async (req,res,next)=>{
-	const { adviserId,productId } = req.body;
+	const { adviserId } = req.params;
+	const { productId } = req.body;
     
     const adviser = await Advisers.findOne({
         where:{

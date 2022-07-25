@@ -77,6 +77,7 @@ const adviserExists = catchAsync(async (req, res, next) => {
 
 	req.adviser = adviser;
 
+    console.log('passed adviser');
 	next();
 });
 
