@@ -46,7 +46,7 @@ const create = catchAsync(async (req,res,next)=>{
     } else {
         await newSold.update({
             sold: parseInt(newSold.sold) + parseInt(sold)
-        })
+        });
     };
 
     res.status(200).json({
