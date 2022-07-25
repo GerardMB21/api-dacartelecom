@@ -120,7 +120,7 @@ const getQuery = catchAsync(async (req,res,next)=>{
 
     const searchProducts = await Products.findAll({
         where: {
-            status: 'active'
+            status: true
         },
     });
 
