@@ -40,6 +40,7 @@ const checkParameters = async (req,res,next)=>{
 	const product = await Products.findOne({
 		where:{
 			id: productId,
+			sectionId: adviser.sectionId,
 			status: true
 		}
 	});
