@@ -12,49 +12,46 @@ const { AppError } = require("../utils/appError");
 
 //controllers
 const create = catchAsync(async (req,res,next)=>{
-    console.log('puta');
     const { adviser } = req;
     const { adviserId } = req.params;
-    // const { 
-    //         sold,
-    //         dayTime,
-    //         productId
-    //     } = req.body;
+    const {
+            sold,
+            dayTime,
+            productId
+        } = req.body;
 
-    //const actualDay = new Date(dayTime);
+    const actualDay = new Date(dayTime);
 
-    console.log(adviser);
+    let newSold;
 
-    //let newSold;
+    newSold = await Solds.findOne({
+        where:{
+            dayTime: actualDay,
+            adviserId,
+            productId,
+            status: true
+        }
+    });
 
-    // newSold = await Solds.findOne({
-    //     where:{
-    //         dayTime: actualDay,
-    //         adviserId,
-    //         productId,
-    //         status: true
-    //     }
-    // });
-
-    // if (!newSold) {
-    //     newSold = await Solds.create({
-    //         sold,
-    //         dayTime,
-    //         adviserId,
-    //         userId: adviser.userId,
-    //         campaignId: adviser.campaignId,
-    //         sectionId: adviser.sectionId,
-    //         productId
-    //     });
-    // } else {
-    //     await newSold.update({
-    //         sold: parseInt(newSold.sold) + parseInt(sold)
-    //     })
-    // };
+    if (!newSold) {
+        newSold = await Solds.create({
+            sold,
+            dayTime,
+            adviserId,
+            userId: adviser.userId,
+            campaignId: adviser.campaignId,
+            sectionId: adviser.sectionId,
+            productId
+        });
+    } else {
+        await newSold.update({
+            sold: parseInt(newSold.sold) + parseInt(sold)
+        })
+    };
 
     res.status(200).json({
         status: 'success',
-        //newSold
+        newSold
     });
 });
 
