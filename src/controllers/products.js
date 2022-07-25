@@ -117,6 +117,7 @@ const getItemsAdmin = catchAsync(async (req,res,next)=>{
 const getQuery = catchAsync(async (req,res,next)=>{
     const { campaignId,sectionId } = req.query;
 
+    let products = []
 
     const searchProducts = await Products.findAll({
         where: {
@@ -124,9 +125,27 @@ const getQuery = catchAsync(async (req,res,next)=>{
         },
     });
 
+    if (campaignId) {
+        products = []
+        searchProducts.map(product=>{
+            if (product.campaignId === parseInt(campaignId)) {
+                products.push(product);
+            };
+        });
+    }
+
+    if (sectionId) {
+        products = []
+        searchProducts.map(product=>{
+            if (product.sectionId === parseInt(sectionId)) {
+                products.push(product);
+            };
+        });
+    };
+
     res.status(200).json({
         status: 'success',
-        searchProducts
+        products
     });
 });
 
