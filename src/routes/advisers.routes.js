@@ -1,7 +1,7 @@
 const express = require('express');
 
 //controllers
-const { create, update, deleted, getItems, getItem, getItemsAdmin } = require('../controllers/advisers');
+const { create, update, deleted, getItems, getItem, getItemsAdmin, getQuery } = require('../controllers/advisers');
 
 //utils
 const { verifyToken, onlyAdmin } = require('../utils/tokenVerify');
@@ -22,5 +22,6 @@ advisersRouter.delete("/delete/:adviserId", verifyToken, onlyAdmin, adviserStatu
 advisersRouter.get("/",getItems);
 advisersRouter.get("/:adviserId", verifyToken, adviserExists,getItem);
 advisersRouter.get("/only/admin", verifyToken, onlyAdmin,getItemsAdmin);
+advisersRouter.get("/get/query",getQuery);
 
 module.exports = { advisersRouter };

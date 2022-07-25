@@ -175,7 +175,42 @@ const getItem = catchAsync(async (req,res,next)=>{
         status: 'success',
         adviser
     })
-})
+});
+
+const getQuery = catchAsync(async (req,res,next)=>{
+    const { campaignId,sectionId } = req.query;
+
+    let advisers = []
+
+    const searchAdvisers = await Advisers.findAll({
+        where: {
+            status: true
+        },
+    });
+
+    if (campaignId) {
+        advisers = []
+        searchAdvisers.map(adviser=>{
+            if (adviser.campaignId === parseInt(campaignId)) {
+                advisers.push(adviser);
+            };
+        });
+    }
+
+    if (sectionId) {
+        advisers = []
+        searchAdvisers.map(adviser=>{
+            if (adviser.sectionId === parseInt(sectionId)) {
+                advisers.push(adviser);
+            };
+        });
+    };
+
+    res.status(200).json({
+        status: 'success',
+        advisers
+    });
+});
 
 module.exports = { 
     create,
@@ -184,4 +219,5 @@ module.exports = {
     getItems,
     getItemsAdmin,
     getItem,
+    getQuery,
 }
