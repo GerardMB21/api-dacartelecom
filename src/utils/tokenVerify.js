@@ -44,7 +44,8 @@ const verifyToken = catchAsync(async (req,res,next)=>{
 			role: role.name
 		};
 
-		next()
+		console.log('passed verify');
+		next();
 	}
 );
 
