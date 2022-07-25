@@ -11,49 +11,53 @@ const { catchAsync } = require("../utils/catchAsync");
 const { AppError } = require("../utils/appError");
 
 //controllers
+// const create = catchAsync(async (req,res,next)=>{
+//     const { adviser } = req;
+//     const { adviserId } = req.params;
+//     const {
+//             sold,
+//             dayTime,
+//             productId
+//         } = req.body;
+
+//     const actualDay = new Date(dayTime);
+
+//     let newSold;
+
+//     newSold = await Solds.findOne({
+//         where:{
+//             dayTime: actualDay,
+//             adviserId,
+//             productId,
+//             status: true
+//         }
+//     });
+
+//     if (!newSold) {
+//         newSold = await Solds.create({
+//             sold,
+//             dayTime,
+//             adviserId,
+//             userId: adviser.userId,
+//             campaignId: adviser.campaignId,
+//             sectionId: adviser.sectionId,
+//             productId
+//         });
+//     } else {
+//         await newSold.update({
+//             sold: parseInt(newSold.sold) + parseInt(sold)
+//         });
+//     };
+
+//     res.status(200).json({
+//         status: 'success',
+//         newSold
+//     });
+// });
+
 const create = catchAsync(async (req,res,next)=>{
-    const { adviser } = req;
-    const { adviserId } = req.params;
-    const {
-            sold,
-            dayTime,
-            productId
-        } = req.body;
-
-    const actualDay = new Date(dayTime);
-
-    let newSold;
-
-    newSold = await Solds.findOne({
-        where:{
-            dayTime: actualDay,
-            adviserId,
-            productId,
-            status: true
-        }
-    });
-
-    if (!newSold) {
-        newSold = await Solds.create({
-            sold,
-            dayTime,
-            adviserId,
-            userId: adviser.userId,
-            campaignId: adviser.campaignId,
-            sectionId: adviser.sectionId,
-            productId
-        });
-    } else {
-        await newSold.update({
-            sold: parseInt(newSold.sold) + parseInt(sold)
-        });
-    };
-
-    res.status(200).json({
-        status: 'success',
-        newSold
-    });
-});
+    console.log('proob');
+})
 
 const update = catchAsync(async (req,res,next)=>{
     const { sale } = req;
