@@ -114,10 +114,27 @@ const getItemsAdmin = catchAsync(async (req,res,next)=>{
     });
 });
 
+const getQuery = catchAsync(async (req,res,next)=>{
+    const { campaignId,sectionId } = req.query;
+
+
+    const searchProducts = await Products.findAll({
+        where: {
+            status: 'active'
+        },
+    });
+
+    res.status(200).json({
+        status: 'success',
+        searchProducts
+    });
+});
+
 module.exports = {
     create,
     update,
     deleted,
     getItems,
-    getItemsAdmin
+    getItemsAdmin,
+    getQuery,
 };

@@ -422,13 +422,13 @@ const getQuery = catchAsync(async (req,res,next)=>{
         return next(new AppError('Sales not found',404));
     };
 
-    // sales.map(sale=>{
-    //     sale.adviserId = undefined,
-    //     sale.userId = undefined,
-    //     sale.campaignId = undefined,
-    //     sale.sectionId = undefined,
-    //     sale.productId = undefined
-    // });
+    sales.map(sale=>{
+        sale.adviserId = undefined,
+        sale.userId = undefined,
+        sale.campaignId = undefined,
+        sale.sectionId = undefined,
+        sale.productId = undefined
+    });
 
     if (!sales.length) {
         return next(new AppError('Solds not found',404));

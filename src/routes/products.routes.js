@@ -1,7 +1,7 @@
 const express = require('express');
 
 //controllers
-const { create, update, getItems, deleted, getItemsAdmin } = require('../controllers/products');
+const { create, update, getItems, deleted, getItemsAdmin, getQuery } = require('../controllers/products');
 
 //middlewares
 const { productExist, productStatus } = require('../middlewares/products');
@@ -18,5 +18,6 @@ productsRouter.patch("/update/:id", verifyToken, onlyAdmin, productExist,update)
 productsRouter.delete("/delete/:id", verifyToken, onlyAdmin, productStatus,deleted);
 productsRouter.get("/",getItems);
 productsRouter.get("/admin", verifyToken, onlyAdmin,getItemsAdmin);
+productsRouter.get("/get/querys",getQuery);
 
 module.exports = { productsRouter };
