@@ -316,7 +316,6 @@ const getQuery = catchAsync(async (req,res,next)=>{
         if (data.sectionId) {
             parameters = [];
             sales.map(sale=>{
-                console.log(sale.dataValues);
                 if (sale.sectionId === data.sectionId) {
                     parameters.push(sale)
                 }
@@ -429,10 +428,6 @@ const getQuery = catchAsync(async (req,res,next)=>{
         sale.sectionId = undefined,
         sale.productId = undefined
     });
-
-    if (!sales.length) {
-        return next(new AppError('Solds not found',404));
-    };
 
     res.status(200).json({
         status:'success',
