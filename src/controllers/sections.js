@@ -87,6 +87,41 @@ const getItems = catchAsync(async (req,res,next)=>{
     });
 });
 
+const getItem = catchAsync(async (req,res,next)=>{
+    const { id } = req.params;
+
+    const data = await Sections.findOne({
+        where:{
+            id,
+            status: true
+        },
+        include:[
+            {
+                model: Campaigns,
+                required: false,
+                where:{
+                    status: true
+                },
+                attributes: ['id','name','description','createdAt','updatedAt']
+            },
+            {
+                model: Products,
+                required: false,
+                where:{
+                    status: true
+                },
+                attributes: ['id','name','description','createdAt','updatedAt']
+            }
+        ],
+        attributes: ['id','name','description','createdAt','updatedAt']
+    });
+
+    res.status(200).json({
+        status: 'success',
+        data
+    });
+});
+
 const getItemsAdmin = catchAsync(async (req,res,next)=>{
     const data = await Sections.findAll({
         where:{
@@ -113,5 +148,6 @@ module.exports = {
     update,
     deleted,
     getItems,
+    getItem,
     getItemsAdmin,
 }
