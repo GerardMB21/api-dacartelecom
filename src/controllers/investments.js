@@ -26,7 +26,8 @@ const create = catchAsync(async (req,res,next)=>{
 
     if (newInvestment) {
         await newInvestment.update({
-            investment: parseFloat(newInvestment.investment) + parseFloat(investment)
+            investment: parseFloat(newInvestment.investment) + parseFloat(investment),
+            userId: userSession.id
         });
     } else {
         newInvestment = await Investments.create({
