@@ -291,26 +291,6 @@ const getQuery = catchAsync(async (req,res,next)=>{
         attributes: { exclude: ['password'] }
 	});
 
-    if (campaignId) {
-        parameters = [];
-        searchUsers.map(user=>{
-            if (user.campaignId === parseInt(campaignId)) {
-                parameters.push(user);
-            };
-        });
-        users = parameters;
-    };
-
-    if (sectionId) {
-        parameters = [];
-        searchUsers.map(user=>{
-            if (user.sectionId === parseInt(sectionId)) {
-                parameters.push(user);
-            };
-        });
-        users = parameters;
-    };
-
     if (roleId) {
         parameters = [];
         searchUsers.map(user=>{
@@ -321,9 +301,29 @@ const getQuery = catchAsync(async (req,res,next)=>{
         users = parameters;
     };
 
+    if (campaignId) {
+        parameters = [];
+        users.map(user=>{
+            if (user.campaignId === parseInt(campaignId)) {
+                parameters.push(user);
+            };
+        });
+        users = parameters;
+    };
+
+    if (sectionId) {
+        parameters = [];
+        users.map(user=>{
+            if (user.sectionId === parseInt(sectionId)) {
+                parameters.push(user);
+            };
+        });
+        users = parameters;
+    };
+
     if (name) {
         parameters = [];
-        searchUsers.map(user=>{
+        users.map(user=>{
             if (user.name === name) {
                 parameters.push(user);
             };
@@ -333,7 +333,7 @@ const getQuery = catchAsync(async (req,res,next)=>{
 
     if (lastName) {
         parameters = [];
-        searchUsers.map(user=>{
+        users.map(user=>{
             if (user.lastName === lastName) {
                 parameters.push(user);
             };
