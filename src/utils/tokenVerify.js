@@ -64,7 +64,7 @@ const onlyAdmin = catchAsync(async (req,res,next)=>{
 
 const permissions = catchAsync(async (req,res,next)=>{
 	const { userSession } = req;
-	const dont = ['counter','supervisor'];
+	const dont = ['contador','supervisor'];
 
 	if (dont.includes(userSession.role)) {
 		return next(new AppError('You dont have permission',403));
