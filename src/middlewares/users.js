@@ -39,7 +39,6 @@ const userExists = catchAsync(async (req, res, next) => {
                 },
 			}
 		],
-		attributes: { exclude:['password'] }
 	});
 
 	if (!user) {
