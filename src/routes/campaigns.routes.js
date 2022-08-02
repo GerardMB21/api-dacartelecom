@@ -18,7 +18,7 @@ const campaignsRouter = express.Router();
 campaignsRouter.post("/create", verifyToken, onlyAdmin, campaignsValidator,create);
 campaignsRouter.patch("/update/:campaignId", verifyToken, onlyAdmin, campaignExist,update);
 campaignsRouter.delete("/delete/:campaignId", verifyToken, onlyAdmin,deleted);
-campaignsRouter.get("/only/admin", verifyToken, onlyAdmin,getAllItems);
+campaignsRouter.get("/get/all", verifyToken, onlyAdmin,getAllItems);
 campaignsRouter.get("/", verifyToken,getItems);
 campaignsRouter.get("/:campaignId", verifyToken, campaignExist,getItem);
 
