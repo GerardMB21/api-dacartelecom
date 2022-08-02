@@ -41,25 +41,11 @@ const verifyToken = catchAsync(async (req,res,next)=>{
 			}
 		});
 
-		const campaign = await Campaigns.findOne({
-			where: {
-				id: user.campaignId,
-				status:true
-			}
-		});
-
-		const section = await Sections.findOne({
-			where: {
-				id: user.sectionId,
-				status: true
-			}
-		});
-
 		req.userSession = {
 			id: user.id,
 			role: role.name,
-			campaign: campaign.id,
-			section: section.id
+			campaign: user.campaignId,
+			section: user.sectionId
 		};
 
 		next();
