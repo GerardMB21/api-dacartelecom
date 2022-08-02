@@ -17,6 +17,10 @@ const create = catchAsync(async (req,res,next)=>{
     } = req.body;
     const actualDate = new Date(day);
 
+    if (section.campaignId !== campaign.id) {
+        return next(new AppError('This section don include this campaign',404));
+    };
+
     let newInvestment = await Investments.findOne({
         where:{
             name,
