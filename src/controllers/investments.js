@@ -15,7 +15,7 @@ const create = catchAsync(async (req,res,next)=>{
         investment,
         day
     } = req.body;
-    const actualDate = new Date(day);i
+    const actualDate = new Date(day);
 
     let newInvestment = await Investments.findOne({
         where:{
