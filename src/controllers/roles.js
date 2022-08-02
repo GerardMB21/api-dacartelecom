@@ -42,9 +42,10 @@ const update = catchAsync(async (req,res,next)=>{
 
 const deleted = catchAsync(async (req,res,next)=>{
     const { role } = req;
+    const { status } = req.body;
 
     await role.update({
-        status: !role.status
+        status
     });
 
     res.status(201).json({

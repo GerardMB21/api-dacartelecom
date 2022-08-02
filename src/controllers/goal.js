@@ -1,34 +1,33 @@
 //models
 const { Goals } = require("../models/goal");
-const { Advisers } = require("../models/advisers");
 const { Campaigns } = require("../models/campaigns");
-const { Products } = require("../models/products");
 const { Sections } = require("../models/sections");
-const { Solds } = require("../models/solds");
 const { Users } = require("../models/users");
+const { Roles } = require("../models/roles");
 
 //utils
 const { catchAsync } = require("../utils/catchAsync");
 const { AppError } = require("../utils/appError");
-const { Roles } = require("../models/roles");
 
 //controllers
 const create = catchAsync(async (req,res,next)=>{
-    const { user,userSession } = req;
+    const { userSession } = req;
     const { goal,day } = req.body;
 
     const actualDay = new Date(day)
 
-    if (parseInt(user.id) !== parseInt(userSession.id)) {
-        return next(new AppError('You dont the owner this account',403));
+    if (userSession.role !== 'supervisor') {
+        if (userSession.role !== 'administrador') {
+            return next(new AppError('You dont have permission',403));
+        };
     };
 
     const goalExist = await Goals.findOne({
         where:{
             day: actualDay,
-            userId: user.id,
-            campaignId: user.campaignId,
-            sectionId: user.sectionId,
+            userId: userSession.id,
+            campaignId: userSession.campaign,
+            sectionId: userSession.section,
         }
     });
 
@@ -39,9 +38,9 @@ const create = catchAsync(async (req,res,next)=>{
     const newGoal = await Goals.create({
         goal,
         day,
-        userId: user.id,
-        campaignId: user.campaignId,
-        sectionId: user.sectionId,
+        userId: userSession.id,
+        campaignId: userSession.campaign,
+        sectionId: userSession.section,
     });
 
     res.status(200).json({
@@ -54,8 +53,10 @@ const update = catchAsync(async (req,res,next)=>{
     const { meta,userSession } = req;
     const { goal } = req.body;
 
-    if (parseInt(meta.userId) !== parseInt(userSession.id)) {
-        return next(new AppError('You dont the owner this goal',403));
+    if (meta.userId !== userSession.id) {
+        if (userSession.role !== 'administrador') {
+            return next(new AppError('You dont the owner this goal',403));
+        };
     };
 
     if (goal) {
@@ -88,7 +89,6 @@ const getItems = catchAsync(async (req,res,next)=>{
                         where: {
                             status: true
                         },
-                        attributes: ['id','name','description','createdAt','updatedAt']
                     },
                     {
                         model: Campaigns,
@@ -96,7 +96,6 @@ const getItems = catchAsync(async (req,res,next)=>{
                         where: {
                             status: true
                         },
-                        attributes: ['id','name','description','createdAt','updatedAt']
                     },
                     {
                         model: Sections,
@@ -104,13 +103,11 @@ const getItems = catchAsync(async (req,res,next)=>{
                         where: {
                             status: true
                         },
-                        attributes: ['id','name','description','createdAt','updatedAt']
                     }
                 ],
-                attributes: ['id','email','name','lastName','createdAt','updatedAt']
+                attributes: { exclude:['password'] }
             }
         ],
-        attributes: ['id','goal','day','createdAt','updatedAt']
     });
 
     res.status(200).json({
@@ -158,7 +155,6 @@ const getQuery = catchAsync(async (req,res,next)=>{
                         where: {
                             status: true
                         },
-                        attributes: ['id','name','description','createdAt','updatedAt']
                     },
                     {
                         model: Campaigns,
@@ -166,7 +162,6 @@ const getQuery = catchAsync(async (req,res,next)=>{
                         where: {
                             status: true
                         },
-                        attributes: ['id','name','description','createdAt','updatedAt']
                     },
                     {
                         model: Sections,
@@ -174,10 +169,9 @@ const getQuery = catchAsync(async (req,res,next)=>{
                         where: {
                             status: true
                         },
-                        attributes: ['id','name','description','createdAt','updatedAt']
                     }
                 ],
-                attributes: ['id','email','name','lastName','createdAt','updatedAt']
+                attributes: { exclude:['password'] }
             }
         ],
     });
@@ -237,11 +231,8 @@ const getQuery = catchAsync(async (req,res,next)=>{
             goals = parameters
         }
     } else {
-        const time = finishDate.split(" ");
-        let finishDay = data.finishDate;
-        if (time.length === 1) {
-            finishDay = data.finishDate + 86400000;
-        }
+        let finishDay = data.finishDate + 86400000;
+        
         searchGoals.map(goal=>{
             const goalDay = new Date(goal.day).getTime();
 
@@ -284,13 +275,6 @@ const getQuery = catchAsync(async (req,res,next)=>{
     if (!goals.length) {
         return next(new AppError('Goals not found',404));
     };
-
-    goals.map(goal=>{
-        goal.userId = undefined,
-        goal.campaignId = undefined,
-        goal.sectionId = undefined,
-        goal.status = undefined
-    });
 
     res.status(200).json({
         status:'success',

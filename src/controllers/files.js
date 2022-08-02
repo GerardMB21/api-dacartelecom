@@ -2,13 +2,13 @@ const { ref, uploadBytes, getDownloadURL } = require('firebase/storage')
 
 //models
 const { Files } = require("../models/files");
+const { Users } = require('../models/users');
+const { Roles } = require('../models/roles');
 
 //utils
 const { catchAsync } = require("../utils/catchAsync");
 const { storage }  = require('../utils/firebase');
 const { AppError } = require('../utils/appError');
-const { Users } = require('../models/users');
-const { Roles } = require('../models/roles');
 
 //controllers
 const create = catchAsync(async (req,res,next)=>{
@@ -16,7 +16,7 @@ const create = catchAsync(async (req,res,next)=>{
     const { fileName } = req.body;
 
     const ext = req.file.originalname.split('.').pop();
-    const filename = `${userSession.role}/file-${Date.now()}.${ext}`;
+    const filename = `files/${userSession.role}/file-${Date.now()}.${ext}`;
     const fileRef = ref(storage,filename);
     const fileRes = await uploadBytes(fileRef,req.file.buffer);
     const url = await getDownloadURL(ref(storage,fileRes.metadata.fullPath));
@@ -38,7 +38,7 @@ const update = catchAsync(async (req,res,next)=>{
     const { file,userSession } = req;
     const { fileName,permission } = req.body;
 
-    if (parseInt(userSession.id) !== parseInt(file.userId)) {
+    if (userSession.id !== file.userId) {
         return next(new AppError('You don the owner this file',403));
     };
 
@@ -62,7 +62,7 @@ const update = catchAsync(async (req,res,next)=>{
 const deleted = catchAsync(async (req,res,next)=>{
     const { file,userSession } = req;
 
-    if (parseInt(userSession.id) !== parseInt(file.userId)) {
+    if (userSession.id !== file.userId) {
         return next(new AppError('You don the owner this file',403));
     };
 
@@ -96,12 +96,10 @@ const getItems = catchAsync(async (req,res,next)=>{
                     where:{
                         status: true
                     },
-                    attributes: ['id','name','description','createdAt','updatedAt']
                 },
-                attributes: ['id','email','name','lastName','createdAt','updatedAt']
+                attributes: { exclude: ['password'] }
             }
         ],
-        attributes: ['id','fileName','url','createdAt','updatedAt']
     });
 
     if (!data.length) {
@@ -135,12 +133,10 @@ const getPermission = catchAsync(async (req,res,next)=>{
                     where:{
                         status: true
                     },
-                    attributes: ['id','name','description','createdAt','updatedAt']
                 },
-                attributes: ['id','email','name','lastName','createdAt','updatedAt']
+                attributes: { exclude: ['password'] }
             }
         ],
-        attributes: ['id','fileName','url','createdAt','updatedAt']
     });
 
     if (!data.length) {
@@ -156,7 +152,7 @@ const getPermission = catchAsync(async (req,res,next)=>{
 const permissionNull = catchAsync(async (req,res,next)=>{
     const { file,userSession } = req;
 
-    if (parseInt(file.permission) !== parseInt(userSession.id)) {
+    if (file.permission !== userSession.id) {
         return next(new AppError('You dont have permission',403));
     }
 

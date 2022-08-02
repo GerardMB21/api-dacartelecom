@@ -12,8 +12,7 @@ const sectionExist = catchAsync(async (req,res,next)=>{
 
 	const section = await Sections.findOne({ 
         where:{
-		id,
-		status: true
+            id
         },
         include:[
             {
@@ -22,7 +21,6 @@ const sectionExist = catchAsync(async (req,res,next)=>{
                 where:{
                     status: true
                 },
-                attributes: ['id','name','description','createdAt','updatedAt']
             },
             {
                 model: Products,
@@ -30,33 +28,6 @@ const sectionExist = catchAsync(async (req,res,next)=>{
                 where:{
                     status: true
                 },
-                attributes: ['id','name','description','createdAt','updatedAt']
-            }
-        ]
-    });
-
-	if (!section) {
-		return next(new AppError('Role not found',404));
-	}
-
-	req.section = section
-
-	next()
-});
-
-const sectionStatus = catchAsync(async (req,res,next)=>{
-	const { id } = req.params;
-
-	const section = await Sections.findOne({ 
-        where:{
-		id
-        },
-        include:[
-            {
-                model: Campaigns,
-            },
-            {
-                model: Products,
             }
         ]
     });
@@ -72,5 +43,4 @@ const sectionStatus = catchAsync(async (req,res,next)=>{
 
 module.exports = {
 	sectionExist,
-    sectionStatus
 };

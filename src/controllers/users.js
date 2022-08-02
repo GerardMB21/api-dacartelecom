@@ -1,11 +1,11 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { Campaigns } = require('../models/campaigns');
-const { Roles } = require('../models/roles');
-const { Sections } = require('../models/sections');
 
 //models
 const { Users } = require('../models/users');
+const { Roles } = require('../models/roles');
+const { Campaigns } = require('../models/campaigns');
+const { Sections } = require('../models/sections');
 
 //utils
 const { catchAsync } = require("../utils/catchAsync");
@@ -39,7 +39,7 @@ const create = catchAsync(async (req,res,next)=>{
 	newUser.password = undefined;
     
     res.status(201).json({
-        status: 'succes',
+        status: 'success',
         newUser
     });
 });
@@ -79,7 +79,7 @@ const login = catchAsync(async (req,res,next)=>{
     });
 
     res.status(200).json({
-        status:'succes',
+        status:'success',
         token,
         role: role.name,
         campaign: user.campaignId,
@@ -94,7 +94,7 @@ const update = catchAsync(async (req,res,next)=>{
         lastName,
         roleId,
         campaignId,
-        sectionId
+        sectionId,
     } = req.body;
 
     if (name) {
@@ -136,8 +136,8 @@ const updatePassword = catchAsync(async (req,res,next)=>{
     const { user, userSession } = req;
     const { last_password,password } = req.body;
 
-    if (user.id !== userSession.id) {
-        return next(new AppError('You are not the owner of this account',403));
+    if (user.id !== userSession.id && userSession.role !== 'administrador') {
+        return next(new AppError('You dont have permission',403));
     };
 
     const validPass = await bcrypt.compare(last_password,user.password);
@@ -155,25 +155,11 @@ const updatePassword = catchAsync(async (req,res,next)=>{
 	const salt = await bcrypt.genSalt(12);
 	const encryptPass = await bcrypt.hash(password,salt);
 
-    await user.update({
-        password: encryptPass,
-    });
-    
-    res.status(200).json({
-        status: 'success',
-    });
-});
-
-const updatePasswordAdmin = catchAsync(async (req,res,next)=>{
-    const { user } = req;
-    const { password } = req.body;
-
-	const salt = await bcrypt.genSalt(12);
-	const encryptPass = await bcrypt.hash(password,salt);
-
-    await user.update({
-        password: encryptPass,
-    });
+    if (password) {
+        await user.update({
+            password: encryptPass,
+        });
+    };
     
     res.status(200).json({
         status: 'success',
@@ -182,9 +168,10 @@ const updatePasswordAdmin = catchAsync(async (req,res,next)=>{
 
 const deleted = catchAsync(async (req,res,next)=>{
     const { user } = req;
+    const { status } = req.body;
 
     await user.update({
-        status: !user.status
+        status
     });
     
     res.status(200).json({
@@ -204,7 +191,6 @@ const getItems = catchAsync(async (req,res,next)=>{
                 where:{
                     status: true
                 },
-                attributes: ['id','name','description','createdAt','updatedAt']
             },
             {
                 model: Campaigns,
@@ -212,7 +198,6 @@ const getItems = catchAsync(async (req,res,next)=>{
                 where:{
                     status: true
                 },
-                attributes: ['id','name','description','createdAt','updatedAt']
             },
             {
                 model: Sections,
@@ -220,10 +205,9 @@ const getItems = catchAsync(async (req,res,next)=>{
                 where:{
                     status: true
                 },
-                attributes: ['id','name','description','createdAt','updatedAt']
             }
         ],
-        attributes: ['id','email','name','lastName','createdAt','updatedAt']
+        attributes: { exclude: ['password'] }
     });
 
     res.status(200).json({
@@ -232,38 +216,20 @@ const getItems = catchAsync(async (req,res,next)=>{
     });
 });
 
-const getItemsAdmin = catchAsync(async (req,res,next)=>{
+const getAllItems = catchAsync(async (req,res,next)=>{
     const data = await Users.findAll({
-        where:{
-            status: false
-        },
         include: [
             {
                 model: Roles,
-                required: false,
-                where:{
-                    status: true
-                },
-                attributes: ['id','name','description','createdAt','updatedAt']
             },
             {
                 model: Campaigns,
-                required: false,
-                where:{
-                    status: true
-                },
-                attributes: ['id','name','description','createdAt','updatedAt']
             },
             {
                 model: Sections,
-                required: false,
-                where:{
-                    status: true
-                },
-                attributes: ['id','name','description','createdAt','updatedAt']
             }
         ],
-        attributes: ['id','email','name','lastName','status','createdAt','updatedAt']
+        attributes: { exclude: ['password'] }
     });
 
     res.status(200).json({
@@ -283,8 +249,10 @@ const getItem = catchAsync(async (req,res,next)=>{
     });
 });
 
-const getItemQuery = catchAsync(async (req,res,next)=>{
+const getQuery = catchAsync(async (req,res,next)=>{
     const { 
+        name,
+        lastName,
         roleId,
         campaignId,
         sectionId
@@ -303,7 +271,6 @@ const getItemQuery = catchAsync(async (req,res,next)=>{
                 where:{
                     status: true
                 },
-				attributes: ['id','name','description','createdAt','updatedAt']
 			},
 			{
 				model: Campaigns,
@@ -311,7 +278,6 @@ const getItemQuery = catchAsync(async (req,res,next)=>{
                 where:{
                     status: true
                 },
-				attributes: ['id','name','description','createdAt','updatedAt']
 			},
 			{
 				model: Sections,
@@ -319,45 +285,50 @@ const getItemQuery = catchAsync(async (req,res,next)=>{
                 where:{
                     status: true
                 },
-				attributes: ['id','name','description','createdAt','updatedAt']
 			}
-		]
+		],
+        attributes: { exclude: ['password'] }
 	});
 
-    searchUsers.map(user=>{
-        user.password = undefined,
-        user.status = undefined
-    });
+    if (name) {
+        searchUsers.map(user=>{
+            if (user.name===name) {
+                users.push(user);
+            };
+        });
+    };
+
+    if (lastName) {
+        searchUsers.map(user=>{
+            if (user.lastName===lastName) {
+                users.push(user);
+            };
+        });
+    };
 
     if (roleId) {
         searchUsers.map(user=>{
-            if (parseInt(user.roleId)===parseInt(roleId)) {
-                users.push(user)
-            }
+            if (user.roleId===roleId) {
+                users.push(user);
+            };
         });
     };
 
     if (campaignId) {
         searchUsers.map(user=>{
-            if (parseInt(user.campaignId)===parseInt(campaignId)) {
-                users.push(user)
-            }
+            if (user.campaignId===campaignId) {
+                users.push(user);
+            };
         });
     };
 
     if (sectionId) {
         searchUsers.map(user=>{
-            if (parseInt(user.sectionId)===parseInt(sectionId)) {
-                users.push(user)
-            }
+            if (user.sectionId===sectionId) {
+                users.push(user);
+            };
         });
     };
-
-    users.map(user=>{
-        user.roleId = undefined,
-        user.campaignId = undefined,
-        user.sectionId = undefined
-    });
 
     res.status(200).json({
         status: 'success',
@@ -370,10 +341,9 @@ module.exports = {
     login,
     update,
     updatePassword,
-    updatePasswordAdmin,
     deleted,
     getItems,
-    getItemsAdmin,
+    getAllItems,
     getItem,
-    getItemQuery
+    getQuery
 }

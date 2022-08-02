@@ -22,7 +22,7 @@ const checkResult = (req, res, next) => {
 	next();
 };
 
-const checkCampaign = async (req,res,next)=>{
+const checkParameters = async (req,res,next)=>{
 	const { campaignId } = req.body;
 
 	const campaign = await Campaigns.findOne({
@@ -44,7 +44,7 @@ const sectionsValidator = [
     body('description').notEmpty().withMessage('Please write a brief description of the role'),
     body('campaignId').isNumeric().withMessage('Invalid parameter, try with a number'),
 	checkResult,
-	checkCampaign,
+	checkParameters,
 ];
 
 module.exports = { 

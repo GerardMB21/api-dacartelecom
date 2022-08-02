@@ -7,6 +7,8 @@ const { Roles } = require('../models/roles');
 //utils
 const { AppError } = require("./appError");
 const { catchAsync } = require("./catchAsync");
+const { Campaigns } = require('../models/campaigns');
+const { Sections } = require('../models/sections');
 
 const verifyToken = catchAsync(async (req,res,next)=>{
 		let token;
@@ -39,9 +41,25 @@ const verifyToken = catchAsync(async (req,res,next)=>{
 			}
 		});
 
+		const campaign = await Campaigns.findOne({
+			where: {
+				id: user.campaignId,
+				status:true
+			}
+		});
+
+		const section = await Sections.findOne({
+			where: {
+				id: user.sectionId,
+				status: true
+			}
+		});
+
 		req.userSession = {
 			id: user.id,
-			role: role.name
+			role: role.name,
+			campaign: campaign.id,
+			section: section.id
 		};
 
 		next();
@@ -51,21 +69,11 @@ const verifyToken = catchAsync(async (req,res,next)=>{
 const onlyAdmin = catchAsync(async (req,res,next)=>{
 	const { userSession } = req;
 
-	if (userSession.role !== 'admin') {
+	if (userSession.role !== 'administrador') {
 		return next(new AppError('You dont have permission',403));
 	};
 
 	next()
-});
-
-const notSupervisor = catchAsync(async (req,res,next)=>{
-	const { userSession } = req;
-
-	if (userSession.role !== 'supervisor') {
-		return next();
-	};
-
-	next(new AppError('You dont have permision',403))
 });
 
 const permissions = catchAsync(async (req,res,next)=>{
@@ -76,12 +84,11 @@ const permissions = catchAsync(async (req,res,next)=>{
 		return next(new AppError('You dont have permission',403));
 	};
 
-	next()
+	next();
 })
 
 module.exports = { 
 	verifyToken,
 	onlyAdmin,
-	notSupervisor,
 	permissions
 };

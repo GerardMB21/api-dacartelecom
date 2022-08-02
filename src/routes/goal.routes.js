@@ -11,14 +11,15 @@ const { goalExist } = require('../middlewares/goal');
 const { goalsValidator } = require('../validators/goal');
 
 //utils
-const { verifyToken, onlyAdmin } = require('../utils/tokenVerify');
+const { verifyToken } = require('../utils/tokenVerify');
 
 const goalsRouter = express.Router();
 
 // htttp://localhost:port/api/v1/roles GET,POST,DELET,PUT
 goalsRouter.post("/create/:id", verifyToken, userExists, goalsValidator,create);
-goalsRouter.patch("/update/:id", verifyToken, goalExist,update);
-goalsRouter.get("/",getItems);
-goalsRouter.get("/:id", goalExist,getItem);
-goalsRouter.get("/get/querys",getQuery);
+goalsRouter.patch("/update/:goalId", verifyToken, goalExist,update);
+goalsRouter.get("/", verifyToken,getItems);
+goalsRouter.get("/:goalId", verifyToken, goalExist,getItem);
+goalsRouter.get("/get/querys", verifyToken,getQuery);
+
 module.exports = { goalsRouter };

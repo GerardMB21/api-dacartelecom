@@ -44,9 +44,10 @@ const update = catchAsync(async (req,res,next)=>{
 
 const deleted = catchAsync(async (req,res,next)=>{
     const { campaign } = req;
+    const { status } = req.body;
 
     await campaign.update({
-        status: !campaign.status
+        status
     });
 
     res.status(200).json({
@@ -72,11 +73,8 @@ const getItems = catchAsync(async (req,res,next)=>{
                 where:{
                     status: true
                 },
-                attributes: ['id','name','description','createdAt','updatedAt']
             },
-            attributes: ['id','name','description','createdAt','updatedAt']
         },
-        attributes: ['id','name','description','createdAt','updatedAt']
     });
 
     res.status(200).json({
@@ -88,15 +86,13 @@ const getItems = catchAsync(async (req,res,next)=>{
 const getItem = catchAsync(async (req,res,next)=>{
     const { campaign } = req;
 
-    campaign.status = undefined;
-
     res.status(200).json({
         stattus: 'success',
         campaign
     });
 });
 
-const getItemsAdmin = catchAsync(async (req,res,next)=>{
+const getAllItems = catchAsync(async (req,res,next)=>{
 
     const data = await Campaigns.findAll({
         where:{
@@ -122,5 +118,5 @@ module.exports = {
     deleted,
     getItems,
     getItem,
-    getItemsAdmin,
+    getAllItems,
 }

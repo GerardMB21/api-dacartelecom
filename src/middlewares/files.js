@@ -12,11 +12,11 @@ const storage = multer.memoryStorage();
 const uploadMiddleware = multer({ storage });
 
 const fileExist = catchAsync(async (req,res,next)=>{
-    const { id } = req.params;
+    const { fileId } = req.params;
 
     const file = await Files.findOne({
         where:{
-            id,
+            id: fileId,
             status: true
         }
     });

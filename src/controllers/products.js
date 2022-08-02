@@ -47,9 +47,10 @@ const update = catchAsync(async (req,res,next)=>{
 
 const deleted = catchAsync(async (req,res,next)=>{
     const { product } = req;
+    const { status } = req.body;
 
     await product.update({
-        status: !product.status
+        status
     });
 
     res.status(201).json({
@@ -69,7 +70,6 @@ const getItems = catchAsync(async (req,res,next)=>{
                 where:{
                     status: true
                 },
-                attributes: ['id','name','description','createdAt','updatedAt']
             },
             {
                 model: Sections,
@@ -77,10 +77,8 @@ const getItems = catchAsync(async (req,res,next)=>{
                 where:{
                     status: true
                 },
-                attributes: ['id','name','description','createdAt','updatedAt']
             }
         ],
-        attributes: ['id','name','description','createdAt','updatedAt']
     });
 
     res.status(200).json({
@@ -89,11 +87,8 @@ const getItems = catchAsync(async (req,res,next)=>{
     });
 });
 
-const getItemsAdmin = catchAsync(async (req,res,next)=>{
+const getAllItems = catchAsync(async (req,res,next)=>{
     const data = await Products.findAll({
-        where:{
-            status: false
-        },
         include:[
             {
                 model: Campaigns,
@@ -128,7 +123,7 @@ const getQuery = catchAsync(async (req,res,next)=>{
     if (campaignId) {
         products = []
         searchProducts.map(product=>{
-            if (product.campaignId === parseInt(campaignId)) {
+            if (product.campaignId === campaignId) {
                 products.push(product);
             };
         });
@@ -137,7 +132,7 @@ const getQuery = catchAsync(async (req,res,next)=>{
     if (sectionId) {
         products = []
         searchProducts.map(product=>{
-            if (product.sectionId === parseInt(sectionId)) {
+            if (product.sectionId === sectionId) {
                 products.push(product);
             };
         });
@@ -154,6 +149,6 @@ module.exports = {
     update,
     deleted,
     getItems,
-    getItemsAdmin,
+    getAllItems,
     getQuery,
 };

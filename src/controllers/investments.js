@@ -9,33 +9,31 @@ const { AppError } = require("../utils/appError");
 
 //controllers
 const create = catchAsync(async (req,res,next)=>{
-    const { user } = req;
+    const { userSession } = req;
     const { 
         name,
         investment,
         day
     } = req.body;
-    const actualDate = new Date(day);
+    const actualDate = new Date(day);i
 
-    let newInvestment
-
-    const updateInvestment = await Investments.findOne({
+    let newInvestment = await Investments.findOne({
         where:{
             name,
             day: actualDate
         }
     });
 
-    if (updateInvestment) {
-        newInvestment = await updateInvestment.update({
-            investment: parseFloat(updateInvestment.investment) + parseFloat(investment)
+    if (newInvestment) {
+        await newInvestment.update({
+            investment: parseFloat(newInvestment.investment) + parseFloat(investment)
         });
     } else {
         newInvestment = await Investments.create({
             name,
             investment,
             day,
-            userId: user.id
+            userId: userSession.id
         });
     }
 
@@ -62,10 +60,10 @@ const update = catchAsync(async (req,res,next)=>{
 });
 
 const deleted = catchAsync(async (req,res,next)=>{
-    const { investment } = req;
+    const { inversion } = req;
 
-    await investment.update({
-        status: !investment.status
+    await inversion.update({
+        status: false
     });
 
     res.status(201).json({
@@ -91,12 +89,10 @@ const getItems = catchAsync(async (req,res,next)=>{
                     where:{
                         status: true
                     },
-                    attributes: ['id','name','description','createdAt','updatedAt']
                 },
-                attributes: ['id','email','name','lastName','createdAt','updatedAt']
+                attributes: { exclude:['password'] }
             }
         ],
-        attributes: ['id','name','day','investment','createdAt','updatedAt']
     });
 
     res.status(200).json({
@@ -105,7 +101,7 @@ const getItems = catchAsync(async (req,res,next)=>{
     })
 });
 
-const getItemsAdmin = catchAsync(async (req,res,next)=>{
+const getAllItems = catchAsync(async (req,res,next)=>{
     const data = await Investments.findAll({
         where:{
             status: false
@@ -124,10 +120,9 @@ const getItemsAdmin = catchAsync(async (req,res,next)=>{
                         status: true
                     }
                 },
-                attributes: ['id','email','name','lastName','status','createdAt','updatedAt']
+                attributes: { exclude:['password'] }
             }
         ],
-        attributes: ['id','name','day','status','createdAt','updatedAt']
     });
 
     if (!data.length) {
@@ -140,10 +135,110 @@ const getItemsAdmin = catchAsync(async (req,res,next)=>{
     })
 });
 
+const getQuery = catchAsync(async (req,res,next)=>{
+    const { 
+            startDate,
+            finishDate,
+            userId,
+        } = req.query;
+
+    let investments = [];
+    let parameters = [];
+
+    const searchInvestments = await Investments.findAll({
+        where:{
+            status: true
+        },
+        include:[
+            {
+                model: Users,
+                required: false,
+                where: {
+                    status: true
+                },
+                include:[
+                    {
+                        model: Roles,
+                        required: false,
+                        where: {
+                            status: true
+                        },
+                    },
+                ],
+                attributes: { exclude:['password'] }
+            }
+        ],
+    });
+
+    const data = {
+        startDate: new Date(startDate).getTime(),
+        finishDate: new Date(finishDate).getTime(),
+        userId: parseInt(userId),
+    };
+
+    if (!data.startDate) {
+        return next(new AppError('Please input a start date',404))
+    }
+
+    if (data.startDate > data.finishDate) {
+        return next(new AppError('The end date cannot be greater than the start date',404));
+    };
+
+    if (!data.finishDate) {
+        searchInvestments.map(investment=>{
+            const investmentDay = new Date(investment.day).getTime();
+
+            if ((investmentDay >= data.startDate) && (investmentDay < data.startDate + 86400000)) {
+                investments.push(investment);
+            };
+        });
+
+        if (data.userId) {
+            parameters = [];
+            investments.map(investment=>{
+                if (investment.userId === data.userId) {
+                    parameters.push(investment);
+                };
+            });
+            investments = parameters
+        }
+    } else {
+        let finishDay = data.finishDate + 86400000;
+
+        searchInvestments.map(investment=>{
+            const investmentDay = new Date(investment.day).getTime();
+
+            if ((investmentDay >= data.startDate) && (investmentDay < finishDay)) {
+                investments.push(investment)
+            };
+        });
+
+        if (data.userId) {
+            parameters = [];
+            investments.map(investment=>{
+                if (investment.userId === data.userId) {
+                    parameters.push(investment)
+                }
+            });
+            investments = parameters;
+        };
+    }
+
+    if (!investments.length) {
+        return next(new AppError('Investments not found',404));
+    };
+
+    res.status(200).json({
+        status:'success',
+        investments
+    });
+});
+
 module.exports = {
     create,
     update,
     deleted,
     getItems,
-    getItemsAdmin,
+    getAllItems,
+    getQuery,
 };

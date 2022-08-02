@@ -8,28 +8,10 @@ const { catchAsync } = require('../utils/catchAsync');
 const soldExist = catchAsync(async (req,res,next)=>{
 	const { soldId } = req.params;
 
-	const sold = await Solds.findOne({ 
+	const sold = await Solds.findOne({
         where:{
-		id: soldId,
-		status: true
-        } 
-    });
-
-	if (!sold) {
-		return next(new AppError('Sold not found',404));
-	}
-
-	req.sale = sold
-
-	next()
-});
-
-const soldStatus = catchAsync(async (req,res,next)=>{
-	const { soldId } = req.params;
-
-	const sold = await Solds.findOne({ 
-        where:{
-		id: soldId,
+			id: soldId,
+			status: true
         } 
     });
 
@@ -44,5 +26,4 @@ const soldStatus = catchAsync(async (req,res,next)=>{
 
 module.exports = {
 	soldExist,
-    soldStatus
 };

@@ -1,5 +1,4 @@
 //models
-const { Advisers } = require("../models/advisers");
 const { Campaigns } = require("../models/campaigns");
 const { Products } = require("../models/products");
 const { Sections } = require("../models/sections");
@@ -12,23 +11,25 @@ const { AppError } = require("../utils/appError");
 
 //controllers
 const create = catchAsync(async (req,res,next)=>{
-    const { adviser } = req;
-    const { adviserId } = req.params;
+    const { user,product } = req;
     const {
             sold,
-            dayTime,
-            productId
+            dayTime
         } = req.body;
 
     const actualDay = new Date(dayTime);
 
     let newSold;
 
+    if (product.sectionId !== user.sectionId) {
+        return next(new AppError('this product does not belong to this section',404));
+    };
+
     newSold = await Solds.findOne({
         where:{
             dayTime: actualDay,
-            adviserId,
-            productId,
+            userId: user.id,
+            productId: product.id,
             status: true
         }
     });
@@ -37,11 +38,10 @@ const create = catchAsync(async (req,res,next)=>{
         newSold = await Solds.create({
             sold,
             dayTime,
-            adviserId,
-            userId: adviser.userId,
-            campaignId: adviser.campaignId,
-            sectionId: adviser.sectionId,
-            productId
+            userId: user.id,
+            campaignId: user.campaign,
+            sectionId: user.section,
+            productId: product.id
         });
     } else {
         await newSold.update({
@@ -74,7 +74,7 @@ const deleted = catchAsync(async (req,res,next)=>{
     const { sale } = req;
 
     await sale.update({
-        status: !sale.status
+        status: false
     });
 
     res.status(201).json({
@@ -89,38 +89,26 @@ const getItems = catchAsync(async (req,res,next)=>{
         },
         include: [
             {
-                model: Advisers,
+                model: Users,
                 required: false,
-                where:{
+                where: {
                     status: true
                 },
-                include: [
-                    {
-                        model: Users,
-                        required: false,
-                        where:{
-                            status: true
-                        },
-                        attributes: ['id','email','name','lastName','createdAt','updatedAt']
-                    },
-                    {
-                        model: Campaigns,
-                        required: false,
-                        where:{
-                            status: true
-                        },
-                        attributes: ['id','name','description','createdAt','updatedAt']
-                    },
-                    {
-                        model: Sections,
-                        required: false,
-                        where:{
-                            status: true
-                        },
-                        attributes: ['id','name','description','createdAt','updatedAt']
-                    },
-                ],
-                attributes: ['id','name','lastName','createdAt','updatedAt']
+                attributes: { exclude: ['password'] }
+            },
+            {
+                model: Campaigns,
+                required: false,
+                where: {
+                    status: true
+                },
+            },
+            {
+                model: Sections,
+                required: false,
+                where: {
+                    status: true
+                },
             },
             {
                 model: Products,
@@ -128,10 +116,8 @@ const getItems = catchAsync(async (req,res,next)=>{
                 where:{
                     status: true
                 },
-                attributes: ['id','name','description','createdAt','updatedAt']
             }
         ],
-        attributes: ['id','sold','dayTime','createdAt','updatedAt']
     });
 
     res.status(200).json({
@@ -149,45 +135,30 @@ const getItem = catchAsync(async (req,res,next)=>{
     })
 });
 
-const getItemsAdmin = catchAsync(async (req,res,next)=>{
+const getAllItems = catchAsync(async (req,res,next)=>{
     const data = await Solds.findAll({
-        where:{
-            status: false
-        },
         include: [
             {
-                model: Advisers,
+                model: Users,
                 required: false,
-                where:{
+                where: {
                     status: true
                 },
-                include: [
-                    {
-                        model: Users,
-                        required: false,
-                        where:{
-                            status: true
-                        },
-                        attributes: ['id','email','name','lastName','createdAt','updatedAt']
-                    },
-                    {
-                        model: Campaigns,
-                        required: false,
-                        where:{
-                            status: true
-                        },
-                        attributes: ['id','name','description','createdAt','updatedAt']
-                    },
-                    {
-                        model: Sections,
-                        required: false,
-                        where:{
-                            status: true
-                        },
-                        attributes: ['id','name','description','createdAt','updatedAt']
-                    },
-                ],
-                attributes: ['id','name','lastName','createdAt','updatedAt']
+                attributes: { exclude: ['password'] }
+            },
+            {
+                model: Campaigns,
+                required: false,
+                where: {
+                    status: true
+                },
+            },
+            {
+                model: Sections,
+                required: false,
+                where: {
+                    status: true
+                },
             },
             {
                 model: Products,
@@ -195,10 +166,8 @@ const getItemsAdmin = catchAsync(async (req,res,next)=>{
                 where:{
                     status: true
                 },
-                attributes: ['id','name','description','createdAt','updatedAt']
             }
         ],
-        attributes: ['id','sold','dayTime','createdAt','updatedAt']
     });
 
     if (!data.length) {
@@ -215,7 +184,6 @@ const getQuery = catchAsync(async (req,res,next)=>{
     const { 
             startDate,
             finishDate,
-            adviserId,
             userId,
             sectionId,
             campaignId,
@@ -231,38 +199,26 @@ const getQuery = catchAsync(async (req,res,next)=>{
         },
         include: [
             {
-                model: Advisers,
+                model: Users,
                 required: false,
-                where:{
+                where: {
                     status: true
                 },
-                include: [
-                    {
-                        model: Users,
-                        required: false,
-                        where:{
-                            status: true
-                        },
-                        attributes: ['id','email','name','lastName','status']
-                    },
-                    {
-                        model: Campaigns,
-                        required: false,
-                        where:{
-                            status: true
-                        },
-                        attributes: ['id','name','description','status']
-                    },
-                    {
-                        model: Sections,
-                        required: false,
-                        where:{
-                            status: true
-                        },
-                        attributes: ['id','name','description','status']
-                    }
-                ],
-                attributes: ['id','name','lastName','status']
+                attributes: { exclude:['password'] }
+            },
+            {
+                model: Campaigns,
+                required: false,
+                where: {
+                    status: true
+                },
+            },
+            {
+                model: Sections,
+                required: false,
+                where: {
+                    status: true
+                },
             },
             {
                 model: Products,
@@ -270,7 +226,6 @@ const getQuery = catchAsync(async (req,res,next)=>{
                 where:{
                     status: true
                 },
-                attributes: ['id','description','name','status']
             }
         ]
     });
@@ -282,7 +237,6 @@ const getQuery = catchAsync(async (req,res,next)=>{
         sectionId: parseInt(sectionId),
         productId: parseInt(productId),
         userId: parseInt(userId),
-        adviserId: parseInt(adviserId),
     };
 
     if (!data.startDate) {
@@ -312,7 +266,6 @@ const getQuery = catchAsync(async (req,res,next)=>{
             sales = parameters;
         };
 
-        console.log(data.sectionId);
         if (data.sectionId) {
             parameters = [];
             sales.map(sale=>{
@@ -337,16 +290,6 @@ const getQuery = catchAsync(async (req,res,next)=>{
             parameters = [];
             sales.map(sale=>{
                 if (sale.userId === data.userId) {
-                    parameters.push(sale)
-                }
-            });
-            sales = parameters;
-        };
-
-        if (data.adviserId) {
-            parameters = [];
-            sales.map(sale=>{
-                if (sale.adviserId === data.adviserId) {
                     parameters.push(sale)
                 }
             });
@@ -405,29 +348,11 @@ const getQuery = catchAsync(async (req,res,next)=>{
             });
             sales = parameters;
         };
-
-        if (data.adviserId) {
-            parameters = [];
-            sales.map(sale=>{
-                if (sale.adviserId === data.adviserId) {
-                    parameters.push(sale)
-                }
-            });
-            sales = parameters;
-        };
     }
 
     if (!sales.length) {
         return next(new AppError('Sales not found',404));
     };
-
-    sales.map(sale=>{
-        sale.adviserId = undefined,
-        sale.userId = undefined,
-        sale.campaignId = undefined,
-        sale.sectionId = undefined,
-        sale.productId = undefined
-    });
 
     res.status(200).json({
         status:'success',
@@ -440,7 +365,7 @@ module.exports = {
     update,
     deleted,
     getItems,
-    getItemsAdmin,
+    getAllItems,
     getItem,
     getQuery
 };

@@ -23,7 +23,6 @@ const userExists = catchAsync(async (req, res, next) => {
                 where:{
                     status: true
                 },
-				attributes: ['id','name','createdAt','updatedAt']
 			},
 			{
 				model: Campaigns,
@@ -31,7 +30,6 @@ const userExists = catchAsync(async (req, res, next) => {
                 where:{
                     status: true
                 },
-				attributes: ['id','name','createdAt','updatedAt']
 			},
 			{
 				model: Sections,
@@ -39,53 +37,9 @@ const userExists = catchAsync(async (req, res, next) => {
                 where:{
                     status: true
                 },
-				attributes: ['id','name','createdAt','updatedAt']
 			}
-		]
-	});
-
-	if (!user) {
-		return next(new AppError('User not found', 404));
-	};
-
-	req.user = user;
-
-	next();
-});
-
-const userstatus = catchAsync(async (req, res, next) => {
-	const { id } = req.params;
-
-	const user = await Users.findOne({ 
-		where: { 
-			id
-		},
-		include: [
-			{
-				model: Roles,
-                required: false,
-                where:{
-                    status: true
-                },
-				attributes: ['id','name','createdAt','updatedAt']
-			},
-			{
-				model: Campaigns,
-                required: false,
-                where:{
-                    status: true
-                },
-				attributes: ['id','name','createdAt','updatedAt']
-			},
-			{
-				model: Sections,
-                required: false,
-                where:{
-                    status: true
-                },
-				attributes: ['id','name','createdAt','updatedAt']
-			}
-		]
+		],
+		attributes: { exclude:['password'] }
 	});
 
 	if (!user) {
@@ -99,5 +53,4 @@ const userstatus = catchAsync(async (req, res, next) => {
 
 module.exports = { 
     userExists,
-	userstatus
 };

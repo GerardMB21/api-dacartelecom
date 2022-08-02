@@ -1,29 +1,17 @@
 const { dbConnect,DataTypes } = require('../config/database');
 
-const Advisers = dbConnect.define('advisers', {
+const UsersInChat = dbConnect.define('usersInChat', {
     id: {
         primaryKey: true,
         type: DataTypes.INTEGER,
         autoIncrement: true,
         allowNull: false
     },
-    name: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
-    lastName: {
-        type: DataTypes.STRING,
+    chatId: {
+        type: DataTypes.INTEGER,
         allowNull: false,
     },
     userId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-    },
-    campaignId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-    },
-    sectionId: {
         type: DataTypes.INTEGER,
         allowNull: false,
     },
@@ -34,4 +22,4 @@ const Advisers = dbConnect.define('advisers', {
     }
 });
 
-module.exports = { Advisers };
+module.exports = { UsersInChat };

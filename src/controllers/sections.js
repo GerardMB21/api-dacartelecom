@@ -45,9 +45,10 @@ const update = catchAsync(async (req,res,next)=>{
 
 const deleted = catchAsync(async (req,res,next)=>{
     const { section } = req;
+    const { status } = req.body;
 
     await section.update({
-        status: !section.status
+        status
     });
 
     res.status(201).json({
@@ -67,7 +68,6 @@ const getItems = catchAsync(async (req,res,next)=>{
                 where:{
                     status: true
                 },
-                attributes: ['id','name','description','createdAt','updatedAt']
             },
             {
                 model: Products,
@@ -75,10 +75,8 @@ const getItems = catchAsync(async (req,res,next)=>{
                 where:{
                     status: true
                 },
-                attributes: ['id','name','description','createdAt','updatedAt']
             }
         ],
-        attributes: ['id','name','description','createdAt','updatedAt']
     });
 
     res.status(200).json({
@@ -88,45 +86,16 @@ const getItems = catchAsync(async (req,res,next)=>{
 });
 
 const getItem = catchAsync(async (req,res,next)=>{
-    const { id } = req.params;
-
-    const data = await Sections.findOne({
-        where:{
-            id,
-            status: true
-        },
-        include:[
-            {
-                model: Campaigns,
-                required: false,
-                where:{
-                    status: true
-                },
-                attributes: ['id','name','description','createdAt','updatedAt']
-            },
-            {
-                model: Products,
-                required: false,
-                where:{
-                    status: true
-                },
-                attributes: ['id','name','description','createdAt','updatedAt']
-            }
-        ],
-        attributes: ['id','name','description','createdAt','updatedAt']
-    });
+    const { section} = req;
 
     res.status(200).json({
         status: 'success',
-        data
+        section
     });
 });
 
-const getItemsAdmin = catchAsync(async (req,res,next)=>{
+const getAllItems = catchAsync(async (req,res,next)=>{
     const data = await Sections.findAll({
-        where:{
-            status: false
-        },
         include:[
             {
                 model: Campaigns,
@@ -149,5 +118,5 @@ module.exports = {
     deleted,
     getItems,
     getItem,
-    getItemsAdmin,
+    getAllItems,
 }

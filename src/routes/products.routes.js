@@ -1,10 +1,10 @@
 const express = require('express');
 
 //controllers
-const { create, update, getItems, deleted, getItemsAdmin, getQuery } = require('../controllers/products');
+const { create, update, getItems, deleted, getQuery, getAllItems } = require('../controllers/products');
 
 //middlewares
-const { productExist, productStatus } = require('../middlewares/products');
+const { productExist } = require('../middlewares/products');
 const { verifyToken, onlyAdmin } = require('../utils/tokenVerify');
 
 //validators
@@ -14,10 +14,10 @@ const productsRouter = express.Router();
 
 // htttp://localhost:port/api/v1/roles GET,POST,DELET,PUT
 productsRouter.post("/create", verifyToken, onlyAdmin, productsValidator,create);
-productsRouter.patch("/update/:id", verifyToken, onlyAdmin, productExist,update);
-productsRouter.delete("/delete/:id", verifyToken, onlyAdmin, productStatus,deleted);
+productsRouter.patch("/update/:productId", verifyToken, onlyAdmin, productExist,update);
+productsRouter.delete("/delete/:productId", verifyToken, onlyAdmin, productExist,deleted);
 productsRouter.get("/",getItems);
-productsRouter.get("/admin", verifyToken, onlyAdmin,getItemsAdmin);
-productsRouter.get("/get/querys",getQuery);
+productsRouter.get("/get/all", verifyToken, onlyAdmin,getAllItems);
+productsRouter.get("/get/querys", verifyToken,getQuery);
 
 module.exports = { productsRouter };

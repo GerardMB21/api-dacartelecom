@@ -22,7 +22,7 @@ const checkResult = (req, res, next) => {
 	next();
 };
 
-const checkCampSect = async (req,res,next)=>{
+const checkParameters = async (req,res,next)=>{
 	const { campaignId,sectionId } = req.body;
 
 	const campaign = await Campaigns.findOne({
@@ -47,7 +47,7 @@ const checkCampSect = async (req,res,next)=>{
 		return next(new AppError('Section Id invalid try other Id',404));
 	};
 
-    if (parseInt(section.campaignId) !== parseInt(campaign.id)) {
+    if (section.campaignId !== campaign.id) {
         return next(new AppError('This section does not belong to this campaign'))
     }
 
@@ -60,7 +60,7 @@ const productsValidator = [
     body('campaignId').isNumeric().withMessage('Invalid parameter, try with a number'),
     body('sectionId').isNumeric().withMessage('Invalid parameter, try with a number'),
 	checkResult,
-	checkCampSect,
+	checkParameters,
 ];
 
 module.exports = { 

@@ -5,6 +5,7 @@ const { Campaigns } = require('../models/campaigns');
 const { Roles } = require('../models/roles');
 const { Sections } = require('../models/sections');
 
+//utils
 const { AppError } = require('../utils/appError');
 
 const checkResult = (req, res, next) => {
@@ -22,43 +23,50 @@ const checkResult = (req, res, next) => {
 	next();
 };
 
-const checkRole = async (req,res,next)=>{
-	const { roleId, campaignId, sectionId } = req.body
+const checkParameters = async (req,res,next)=>{
+	const { roleId, campaignId, sectionId } = req.body;
+	const roles = ['supervisor','asesor'];
 
-	const role = await Roles.findOne({ where: {
-		id:roleId,
-		status:true
-	} });
+	const role = await Roles.findOne({
+		where: {
+			id:roleId,
+			status:true
+		}
+	});
 
 	if (!role) {
 		return next(new AppError('Role Id invalid try other Id',400));
 	};
 
-	if (role.name === "supervisor") {
-		if (!parseInt(campaignId)) {
+	if (roles.includes(role.name)) {
+		if (!campaignId) {
 			return next(new AppError('Invalid parameter, try with a number',404))
 		}
 
-		const campaign = await Campaigns.findOne({ where:{
-			id:campaignId,
-			status: true
-		} });
+		const campaign = await Campaigns.findOne({
+			where:{
+				id:campaignId,
+				status: true
+			}
+		});
 
 		if (!campaign) {
-			return next(new AppError('Campaign Id invalid try other Id', 400));
+			return next(new AppError('Campaign Id invalid try other Id', 404));
 		};
 
-		if (!parseInt(sectionId)) {
+		if (!sectionId) {
 			return next(new AppError('Invalid parameter, try with a number',404))
 		}
 
-		const section = await Sections.findOne({ where:{
-			id:sectionId,
-			status:true
-		} });
+		const section = await Sections.findOne({
+			where:{
+				id:sectionId,
+				status:true
+			}
+		});
 
 		if (!section) {
-			return next(new AppError('Section Id invalid try other Id', 400));
+			return next(new AppError('Section Id invalid try other Id', 404));
 		};
 	};
 
@@ -76,19 +84,9 @@ const userValidator = [
 		.withMessage('Password must contain letters and numbers'),
 	body('roleId').isNumeric().withMessage('Invalid parameter, try with a number'),
 	checkResult,
-	checkRole,
-];
-
-const passwordValidator = [
-	body('password')
-		.isLength({ min: 5 })
-		.withMessage('Password must be at least 5 characters long')
-		.isAlphanumeric()
-		.withMessage('Password must contain letters and numbers'),
-		checkResult,
+	checkParameters,
 ];
 
 module.exports = { 
 	userValidator,
-	passwordValidator
  };

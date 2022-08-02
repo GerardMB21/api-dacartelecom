@@ -1,7 +1,7 @@
 const express = require('express');
 
 //controllers
-const { create, update, deleted, getItems, getItemsAdmin, getItem } = require('../controllers/campaigns');
+const { create, update, deleted, getItems, getItem, getAllItems } = require('../controllers/campaigns');
 
 //middlewares
 const { campaignExist, campaignStatus } = require('../middlewares/campaigns');
@@ -16,10 +16,10 @@ const campaignsRouter = express.Router();
 
 // htttp://localhost:port/api/v1/roles GET,POST,DELET,PUT
 campaignsRouter.post("/create", verifyToken, onlyAdmin, campaignsValidator,create);
-campaignsRouter.patch("/update/:id", verifyToken, onlyAdmin, campaignExist,update);
-campaignsRouter.delete("/delete/:id", verifyToken, onlyAdmin, campaignStatus,deleted);
-campaignsRouter.get("/only/admin", verifyToken, onlyAdmin,getItemsAdmin);
-campaignsRouter.get("/",getItems);
-campaignsRouter.get("/:id", verifyToken, campaignExist,getItem);
+campaignsRouter.patch("/update/:campaignId", verifyToken, onlyAdmin, campaignExist,update);
+campaignsRouter.delete("/delete/:campaignId", verifyToken, onlyAdmin,deleted);
+campaignsRouter.get("/only/admin", verifyToken, onlyAdmin,getAllItems);
+campaignsRouter.get("/", verifyToken,getItems);
+campaignsRouter.get("/:campaignId", verifyToken, campaignExist,getItem);
 
 module.exports = { campaignsRouter };

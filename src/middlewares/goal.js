@@ -10,11 +10,11 @@ const { AppError } = require('../utils/appError');
 const { catchAsync } = require('../utils/catchAsync');
 
 const goalExist = catchAsync(async (req,res,next)=>{
-	const { id } = req.params;
+	const { goalId } = req.params;
 
 	const goal = await Goals.findOne({ 
         where:{
-		id,
+		id: goalId,
 		status: true
         },
         include:[
@@ -31,7 +31,6 @@ const goalExist = catchAsync(async (req,res,next)=>{
                         where: {
                             status: true
                         },
-                        attributes: ['id','name','description','createdAt','updatedAt']
                     },
                     {
                         model: Campaigns,
@@ -39,7 +38,6 @@ const goalExist = catchAsync(async (req,res,next)=>{
                         where: {
                             status: true
                         },
-                        attributes: ['id','name','description','createdAt','updatedAt']
                     },
                     {
                         model: Sections,
@@ -47,10 +45,9 @@ const goalExist = catchAsync(async (req,res,next)=>{
                         where: {
                             status: true
                         },
-                        attributes: ['id','name','description','createdAt','updatedAt']
                     }
                 ],
-                attributes: ['id','email','name','lastName','createdAt','updatedAt']
+                attributes: { exclude:['password'] }
             }
         ],
     });

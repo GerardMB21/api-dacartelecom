@@ -1,34 +1,22 @@
 const { dbConnect,DataTypes } = require('../config/database');
 
-const Solds = dbConnect.define('solds', {
+const Messages = dbConnect.define('messages', {
     id: {
         primaryKey: true,
         type: DataTypes.INTEGER,
         autoIncrement: true,
         allowNull: false
     },
-    sold: {
+    chatId: {
         type: DataTypes.INTEGER,
-        allowNull: false,
-    },
-    dayTime: {
-        type: DataTypes.DATE,
         allowNull: false,
     },
     userId: {
         type: DataTypes.INTEGER,
         allowNull: false,
     },
-    campaignId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-    },
-    sectionId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-    },
-    productId: {
-        type: DataTypes.INTEGER,
+    message: {
+        type: DataTypes.STRING,
         allowNull: false,
     },
     status: {
@@ -38,4 +26,4 @@ const Solds = dbConnect.define('solds', {
     }
 });
 
-module.exports = { Solds };
+module.exports = { Messages };

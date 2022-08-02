@@ -8,12 +8,11 @@ const { AppError } = require('../utils/appError');
 const { catchAsync } = require('../utils/catchAsync');
 
 const campaignExist = catchAsync(async (req,res,next)=>{
-	const { id } = req.params;
+	const { campaignId } = req.params;
 
 	const campaign = await Campaigns.findOne({ 
 		where:{
-		id,
-		status: true
+            id:campaignId,
 		},
         include: {
             model: Sections,
@@ -27,9 +26,7 @@ const campaignExist = catchAsync(async (req,res,next)=>{
                 where:{
                     status: true
                 },
-                attributes: ['id','name','description','createdAt','updatedAt']
             },
-            attributes: ['id','name','description','createdAt','updatedAt']
         }
 	});
 
@@ -42,23 +39,6 @@ const campaignExist = catchAsync(async (req,res,next)=>{
 	next()
 });
 
-const campaignStatus = catchAsync(async (req,res,next)=>{
-	const { id } = req.params;
-
-	const campaign = await Campaigns.findOne({ where:{
-		id
-	} });
-
-	if (!campaign) {
-		return next(new AppError('Campaign not found',404));
-	}
-
-	req.campaign = campaign
-
-	next()
-});
-
 module.exports = {
 	campaignExist,
-	campaignStatus
 };
