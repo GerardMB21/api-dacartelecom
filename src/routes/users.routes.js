@@ -22,7 +22,7 @@ usersRouter.patch("/update/password/:id", verifyToken, userExists,updatePassword
 usersRouter.delete("/delete/:id", verifyToken, onlyAdmin, userExists,deleted);
 usersRouter.get("/", verifyToken,getItems);
 usersRouter.get("/:id", verifyToken, userExists,getItem);
-usersRouter.get("/get/query", verifyToken,getQuery);
+usersRouter.get("/get/querys", verifyToken,getQuery);
 usersRouter.get("/only/admin", verifyToken, onlyAdmin,getAllItems);
 
 module.exports = { usersRouter };
