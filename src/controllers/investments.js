@@ -38,7 +38,7 @@ const create = catchAsync(async (req,res,next)=>{
             day,
             userId: userSession.id,
             campaignId: campaign.id,
-            section: section.id
+            sectionId: section.id
         });
     }
 
