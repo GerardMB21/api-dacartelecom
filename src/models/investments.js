@@ -23,6 +23,14 @@ const Investments = dbConnect.define('investments', {
         type: DataTypes.INTEGER,
         allowNull: false,
     },
+    campaignId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+    },
+    sectionId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+    },
     status: {
         type: DataTypes.BOOLEAN,
         allowNull: false,

@@ -9,7 +9,7 @@ const { AppError } = require("../utils/appError");
 
 //controllers
 const create = catchAsync(async (req,res,next)=>{
-    const { userSession } = req;
+    const { userSession,campaign,section } = req;
     const { 
         name,
         investment,
@@ -20,7 +20,9 @@ const create = catchAsync(async (req,res,next)=>{
     let newInvestment = await Investments.findOne({
         where:{
             name,
-            day: actualDate
+            day: actualDate,
+            campaignId: campaign.id,
+            sectionId: section.id
         }
     });
 
@@ -34,7 +36,9 @@ const create = catchAsync(async (req,res,next)=>{
             name,
             investment,
             day,
-            userId: userSession.id
+            userId: userSession.id,
+            campaignId: campaign.id,
+            section: section.id
         });
     }
 

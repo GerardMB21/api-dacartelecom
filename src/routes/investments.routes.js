@@ -5,6 +5,8 @@ const { create, update, deleted, getItems, getAllItems, getQuery } = require('..
 
 //middlewares
 const { investmentExist } = require('../middlewares/investments');
+const { campaignExist } = require('../middlewares/campaigns');
+const { sectionExist } = require('../middlewares/sections');
 
 //validators
 const { investmentsValidator } = require('../validators/investments');
@@ -15,7 +17,7 @@ const { verifyToken, onlyAdmin, permissions } = require('../utils/tokenVerify');
 const investmentsRouter = express.Router();
 
 // htttp://localhost:port/api/v1/roles GET,POST,DELET,PUT
-investmentsRouter.post("/create", verifyToken, permissions, investmentsValidator,create);
+investmentsRouter.post("/create/:campaignId/:sectionId", verifyToken, permissions, campaignExist, sectionExist, investmentsValidator,create);
 investmentsRouter.patch("/update/:investmentId", verifyToken, onlyAdmin, investmentExist,update);
 investmentsRouter.delete("/delete/:investmentId", verifyToken, onlyAdmin, investmentExist,deleted);
 investmentsRouter.get("/", verifyToken,getItems);

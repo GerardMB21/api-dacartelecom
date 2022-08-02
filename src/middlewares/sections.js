@@ -8,11 +8,11 @@ const { AppError } = require('../utils/appError');
 const { catchAsync } = require('../utils/catchAsync');
 
 const sectionExist = catchAsync(async (req,res,next)=>{
-	const { id } = req.params;
+	const { sectionId } = req.params;
 
 	const section = await Sections.findOne({ 
         where:{
-            id
+            id: sectionId
         },
         include:[
             {
