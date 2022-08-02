@@ -134,13 +134,13 @@ const update = catchAsync(async (req,res,next)=>{
 
 const updatePassword = catchAsync(async (req,res,next)=>{
     const { user, userSession } = req;
-    const { last_password,password } = req.body;
+    const { lastPassword,password } = req.body;
 
     if (user.id !== userSession.id && userSession.role !== 'administrador') {
         return next(new AppError('You dont have permission',403));
     };
 
-    const validPass = await bcrypt.compare(last_password,user.password);
+    const validPass = await bcrypt.compare(lastPassword,user.password);
 
     if (!validPass) {
         return next(new AppError('Invalid password',404));
