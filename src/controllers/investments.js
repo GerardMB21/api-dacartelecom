@@ -104,9 +104,6 @@ const getItems = catchAsync(async (req,res,next)=>{
 
 const getAllItems = catchAsync(async (req,res,next)=>{
     const data = await Investments.findAll({
-        where:{
-            status: false
-        },
         include: [
             {
                 model: Users,
