@@ -21,8 +21,12 @@ const create = catchAsync(async (req,res,next)=>{
 
     let newSold;
 
+    if (user.role.name !== 'asesor') {
+        return next(new AppError('This user dont adviser',404));
+    };
+
     if (product.sectionId !== user.sectionId) {
-        return next(new AppError('this product does not belong to this section',404));
+        return next(new AppError('This product does not belong to this section',404));
     };
 
     newSold = await Solds.findOne({
