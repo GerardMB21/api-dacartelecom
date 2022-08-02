@@ -23,6 +23,6 @@ usersRouter.delete("/delete/:id", verifyToken, onlyAdmin, userExists,deleted);
 usersRouter.get("/", verifyToken,getItems);
 usersRouter.get("/:id", verifyToken, userExists,getItem);
 usersRouter.get("/get/querys", verifyToken,getQuery);
-usersRouter.get("/only/admin", verifyToken, onlyAdmin,getAllItems);
+usersRouter.get("/get/all", verifyToken, onlyAdmin,getAllItems);
 
 module.exports = { usersRouter };
