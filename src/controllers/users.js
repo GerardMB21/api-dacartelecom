@@ -292,7 +292,7 @@ const getQuery = catchAsync(async (req,res,next)=>{
 
     if (name) {
         searchUsers.map(user=>{
-            if (user.name===name) {
+            if (user.name === name) {
                 users.push(user);
             };
         });
@@ -300,7 +300,7 @@ const getQuery = catchAsync(async (req,res,next)=>{
 
     if (lastName) {
         searchUsers.map(user=>{
-            if (user.lastName===lastName) {
+            if (user.lastName === lastName) {
                 users.push(user);
             };
         });
@@ -308,7 +308,7 @@ const getQuery = catchAsync(async (req,res,next)=>{
 
     if (roleId) {
         searchUsers.map(user=>{
-            if (user.roleId===roleId) {
+            if (user.roleId === parseInt(roleId)) {
                 users.push(user);
             };
         });
@@ -316,7 +316,7 @@ const getQuery = catchAsync(async (req,res,next)=>{
 
     if (campaignId) {
         searchUsers.map(user=>{
-            if (user.campaignId===campaignId) {
+            if (user.campaignId === parseInt(campaignId)) {
                 users.push(user);
             };
         });
@@ -324,7 +324,7 @@ const getQuery = catchAsync(async (req,res,next)=>{
 
     if (sectionId) {
         searchUsers.map(user=>{
-            if (user.sectionId===sectionId) {
+            if (user.sectionId === parseInt(sectionId)) {
                 users.push(user);
             };
         });
