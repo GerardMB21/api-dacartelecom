@@ -291,20 +291,20 @@ const getQuery = catchAsync(async (req,res,next)=>{
         attributes: { exclude: ['password'] }
 	});
 
-    if (name) {
+    if (campaignId) {
         parameters = [];
         searchUsers.map(user=>{
-            if (user.name === name) {
+            if (user.campaignId === parseInt(campaignId)) {
                 parameters.push(user);
             };
         });
         users = parameters;
     };
 
-    if (lastName) {
+    if (sectionId) {
         parameters = [];
         searchUsers.map(user=>{
-            if (user.lastName === lastName) {
+            if (user.sectionId === parseInt(sectionId)) {
                 parameters.push(user);
             };
         });
@@ -321,20 +321,20 @@ const getQuery = catchAsync(async (req,res,next)=>{
         users = parameters;
     };
 
-    if (campaignId) {
+    if (name) {
         parameters = [];
         searchUsers.map(user=>{
-            if (user.campaignId === parseInt(campaignId)) {
+            if (user.name === name) {
                 parameters.push(user);
             };
         });
         users = parameters;
     };
 
-    if (sectionId) {
+    if (lastName) {
         parameters = [];
         searchUsers.map(user=>{
-            if (user.sectionId === parseInt(sectionId)) {
+            if (user.lastName === lastName) {
                 parameters.push(user);
             };
         });
