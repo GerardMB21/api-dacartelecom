@@ -7,8 +7,6 @@ const { Roles } = require('../models/roles');
 //utils
 const { AppError } = require("./appError");
 const { catchAsync } = require("./catchAsync");
-const { Campaigns } = require('../models/campaigns');
-const { Sections } = require('../models/sections');
 
 const verifyToken = catchAsync(async (req,res,next)=>{
 		let token;

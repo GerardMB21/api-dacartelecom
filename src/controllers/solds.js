@@ -43,8 +43,8 @@ const create = catchAsync(async (req,res,next)=>{
             sold,
             dayTime,
             userId: user.id,
-            campaignId: user.campaign,
-            sectionId: user.section,
+            campaignId: user.campaignId,
+            sectionId: user.sectionId,
             productId: product.id
         });
     } else {
