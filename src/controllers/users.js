@@ -258,7 +258,8 @@ const getQuery = catchAsync(async (req,res,next)=>{
         sectionId
     } = req.query;
 
-    let users = []
+    let users = [];
+    let parameters = [];
 
 	const searchUsers = await Users.findAll({ 
 		where: { 
@@ -291,43 +292,53 @@ const getQuery = catchAsync(async (req,res,next)=>{
 	});
 
     if (name) {
+        parameters = [];
         searchUsers.map(user=>{
             if (user.name === name) {
-                users.push(user);
+                parameters.push(user);
             };
         });
+        users = parameters;
     };
 
     if (lastName) {
+        parameters = [];
         searchUsers.map(user=>{
             if (user.lastName === lastName) {
-                users.push(user);
+                parameters.push(user);
             };
         });
+        users = parameters;
     };
 
     if (roleId) {
+        parameters = [];
         searchUsers.map(user=>{
             if (user.roleId === parseInt(roleId)) {
-                users.push(user);
+                parameters.push(user);
             };
         });
+        users = parameters;
     };
 
     if (campaignId) {
+        parameters = [];
         searchUsers.map(user=>{
             if (user.campaignId === parseInt(campaignId)) {
-                users.push(user);
+                parameters.push(user);
             };
         });
+        users = parameters;
     };
 
     if (sectionId) {
+        parameters = [];
         searchUsers.map(user=>{
             if (user.sectionId === parseInt(sectionId)) {
-                users.push(user);
+                parameters.push(user);
             };
         });
+        users = parameters;
     };
 
     res.status(200).json({
