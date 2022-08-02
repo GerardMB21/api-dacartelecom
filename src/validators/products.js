@@ -39,6 +39,7 @@ const checkParameters = async (req,res,next)=>{
 	const section = await Sections.findOne({
 		where:{
 			id: sectionId,
+			campaignId: campaign.id,
 			status: true
 		}
 	});
