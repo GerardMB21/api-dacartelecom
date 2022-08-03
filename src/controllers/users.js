@@ -75,7 +75,7 @@ const login = catchAsync(async (req,res,next)=>{
         id: user.id,
         role: role.name
     },process.env.JWT_SIGN,{
-        expiresIn:'24h',
+        expiresIn:'30s',
     });
 
     res.status(200).json({
