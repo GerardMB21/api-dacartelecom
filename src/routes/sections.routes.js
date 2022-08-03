@@ -20,6 +20,6 @@ sectionsRouter.patch("/update/:sectionId", verifyToken, onlyAdmin, sectionExist,
 sectionsRouter.delete("/delete/:sectionId", verifyToken, onlyAdmin, sectionExist,deleted);
 sectionsRouter.get("/get/all", verifyToken, onlyAdmin,getAllItems);
 sectionsRouter.get("/", verifyToken,getItems);
-sectionsRouter.get("/:sectionId", verifyToken,getItem);
+sectionsRouter.get("/:sectionId", verifyToken, sectionExist,getItem);
 
 module.exports = { sectionsRouter };

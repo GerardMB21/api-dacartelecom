@@ -86,7 +86,7 @@ const getItems = catchAsync(async (req,res,next)=>{
 });
 
 const getItem = catchAsync(async (req,res,next)=>{
-    const { section} = req;
+    const { section } = req;
 
     res.status(200).json({
         status: 'success',

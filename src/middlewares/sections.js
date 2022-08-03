@@ -38,7 +38,7 @@ const sectionExist = catchAsync(async (req,res,next)=>{
 
 	req.section = section
 
-	next()
+	next();
 });
 
 module.exports = {
