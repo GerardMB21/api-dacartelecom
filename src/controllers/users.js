@@ -81,6 +81,7 @@ const login = catchAsync(async (req,res,next)=>{
     res.status(200).json({
         status:'success',
         token,
+        id: user.id,
         role: role.name,
         campaign: user.campaignId,
         section: user.sectionId,
