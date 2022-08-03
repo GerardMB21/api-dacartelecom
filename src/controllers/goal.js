@@ -11,10 +11,12 @@ const { AppError } = require("../utils/appError");
 
 //controllers
 const create = catchAsync(async (req,res,next)=>{
-    const { userSession } = req;
+    const { userSession,user } = req;
     const { goal,day } = req.body;
+    const actualDay = new Date(day);
 
-    const actualDay = new Date(day)
+    let goalExist;
+    let newGoal;
 
     if (userSession.role !== 'supervisor') {
         if (userSession.role !== 'administrador') {
@@ -22,26 +24,47 @@ const create = catchAsync(async (req,res,next)=>{
         };
     };
 
-    const goalExist = await Goals.findOne({
-        where:{
-            day: actualDay,
-            userId: userSession.id,
-            campaignId: userSession.campaign,
-            sectionId: userSession.section,
-        }
-    });
+    if (userSession.role === 'administrador') {
+        goalExist = await Goals.findOne({
+            where:{
+                day: actualDay,
+                userId: user.id,
+                campaignId: user.campaignId,
+                sectionId: user.sectionId,
+            }
+        });
+    } else {
+        goalExist = await Goals.findOne({
+            where: {
+                day: actualDay,
+                userId: userSession.id,
+                campaignId: userSession.campaign,
+                sectionId: userSession.sectionId
+            }
+        });
+    };
 
     if (goalExist) {
         return next(new AppError('You have already registered a goal today',404));
     };
 
-    const newGoal = await Goals.create({
-        goal,
-        day,
-        userId: userSession.id,
-        campaignId: userSession.campaign,
-        sectionId: userSession.section,
-    });
+    if (userSession.role === 'administrador') {
+        newGoal = await Goals.create({
+            goal,
+            day,
+            userId: user.id,
+            campaignId: user.campaignId,
+            sectionId: user.sectionId,
+        });
+    } else {
+        newGoal = await Goals.create({
+            goal,
+            day,
+            userId: userSession.id,
+            campaignId: userSession.campaign,
+            sectionId: userSession.section,
+        });
+    };
 
     res.status(200).json({
         status: 'success',
