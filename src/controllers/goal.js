@@ -18,10 +18,8 @@ const create = catchAsync(async (req,res,next)=>{
     let goalExist;
     let newGoal;
 
-    if (userSession.role !== 'supervisor') {
-        if (userSession.role !== 'administrador') {
-            return next(new AppError('You dont have permission',403));
-        };
+    if (userSession.role !== 'supervisor' && userSession.role !== 'administrador') {
+        return next(new AppError('You dont have permission',403));
     };
 
     if (userSession.role === 'administrador') {
@@ -49,6 +47,11 @@ const create = catchAsync(async (req,res,next)=>{
     };
 
     if (userSession.role === 'administrador') {
+        
+        if (user.role.name !== 'supervisor') {
+            return next(new AppError('This account dont role supervisor',404));
+        };
+
         newGoal = await Goals.create({
             goal,
             day,
