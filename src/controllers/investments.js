@@ -145,6 +145,8 @@ const getQuery = catchAsync(async (req,res,next)=>{
     const { 
             startDate,
             finishDate,
+            campaignId,
+            sectionId,
             userId,
         } = req.query;
 
@@ -179,6 +181,8 @@ const getQuery = catchAsync(async (req,res,next)=>{
     const data = {
         startDate: new Date(startDate).getTime(),
         finishDate: new Date(finishDate).getTime(),
+        campaignId: parseInt(campaignId),
+        sectionId: parseInt(sectionId),
         userId: parseInt(userId),
     };
 
@@ -199,6 +203,26 @@ const getQuery = catchAsync(async (req,res,next)=>{
             };
         });
 
+        if (data.campaignId) {
+            parameters = [];
+            investments.map(investment=>{
+                if (investment.campaignId === data.campaignId) {
+                    parameters.push(investment);
+                };
+            });
+            investments = parameters;
+        };
+
+        if (data.sectionId) {
+            parameters = [];
+            investments.map(investment=>{
+                if (investment.sectionId === data.sectionId) {
+                    parameters.push(investment);
+                };
+            });
+            investments = parameters;
+        };
+
         if (data.userId) {
             parameters = [];
             investments.map(investment=>{
@@ -218,6 +242,26 @@ const getQuery = catchAsync(async (req,res,next)=>{
                 investments.push(investment)
             };
         });
+
+        if (data.campaignId) {
+            parameters = [];
+            investments.map(investment=>{
+                if (investment.campaignId === data.campaignId) {
+                    parameters.push(investment);
+                };
+            });
+            investments = parameters;
+        };
+
+        if (data.sectionId) {
+            parameters = [];
+            investments.map(investment=>{
+                if (investment.sectionId === data.sectionId) {
+                    parameters.push(investment);
+                };
+            });
+            investments = parameters;
+        };
 
         if (data.userId) {
             parameters = [];
