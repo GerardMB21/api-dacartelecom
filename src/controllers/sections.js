@@ -112,6 +112,37 @@ const getAllItems = catchAsync(async (req,res,next)=>{
     });
 });
 
+const getQuery = catchAsync(async (req,res,next)=>{
+    const { campaignId } = req.query;
+
+    const sections = await Sections.findAll({
+        where: {
+            campaignId
+        },
+        include:[
+            {
+                model: Campaigns,
+                required: false,
+                where:{
+                    status: true
+                },
+            },
+            {
+                model: Products,
+                required: false,
+                where:{
+                    status: true
+                },
+            }
+        ],
+    });
+
+    res.status(200).json({
+        status: 'success',
+        sections
+    });
+});
+
 module.exports = {
     create,
     update,
@@ -119,4 +150,5 @@ module.exports = {
     getItems,
     getItem,
     getAllItems,
+    getQuery,
 }

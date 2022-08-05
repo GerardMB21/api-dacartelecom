@@ -1,7 +1,7 @@
 const express = require('express');
 
 //controllers
-const { create, update, deleted, getItems, getItem, getAllItems } = require('../controllers/sections');
+const { create, update, deleted, getItems, getItem, getAllItems, getQuery } = require('../controllers/sections');
 
 //middlewares
 const { sectionExist } = require('../middlewares/sections');
@@ -19,6 +19,7 @@ sectionsRouter.post("/create", verifyToken, onlyAdmin, sectionsValidator,create)
 sectionsRouter.patch("/update/:sectionId", verifyToken, onlyAdmin, sectionExist,update);
 sectionsRouter.delete("/delete/:sectionId", verifyToken, onlyAdmin, sectionExist,deleted);
 sectionsRouter.get("/get/all", verifyToken, onlyAdmin,getAllItems);
+sectionsRouter.get("/get/query", verifyToken, getQuery);
 sectionsRouter.get("/", verifyToken,getItems);
 sectionsRouter.get("/:sectionId", verifyToken, sectionExist,getItem);
 
