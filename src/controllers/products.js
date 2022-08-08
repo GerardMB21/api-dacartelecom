@@ -119,13 +119,11 @@ const getQuery = catchAsync(async (req,res,next)=>{
             status: true
         },
     });
-    console.log(campaignId);
-    console.log(sectionId);
 
     if (campaignId) {
         products = []
         searchProducts.map(product=>{
-            if (product.campaignId === campaignId) {
+            if (product.campaignId === parseInt(campaignId)) {
                 products.push(product);
             };
         });
@@ -134,7 +132,7 @@ const getQuery = catchAsync(async (req,res,next)=>{
     if (sectionId) {
         products = []
         searchProducts.map(product=>{
-            if (product.sectionId === sectionId) {
+            if (product.sectionId === parseInt(sectionId)) {
                 products.push(product);
             };
         });
