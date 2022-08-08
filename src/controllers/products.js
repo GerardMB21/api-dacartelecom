@@ -119,6 +119,8 @@ const getQuery = catchAsync(async (req,res,next)=>{
             status: true
         },
     });
+    console.log(campaignId);
+    console.log(sectionId);
 
     if (campaignId) {
         products = []
@@ -140,7 +142,7 @@ const getQuery = catchAsync(async (req,res,next)=>{
 
     res.status(200).json({
         status: 'success',
-        searchProducts
+        products
     });
 });
 
