@@ -37,7 +37,7 @@ const create = catchAsync(async (req,res,next)=>{
                 day: actualDay,
                 userId: userSession.id,
                 campaignId: userSession.campaign,
-                sectionId: userSession.sectionId
+                sectionId: userSession.section
             }
         });
     };
