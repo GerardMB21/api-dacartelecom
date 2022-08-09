@@ -81,7 +81,6 @@ const getItems = catchAsync(async (req,res,next)=>{
     const { offSet,limit } = req.query;
 
     const data = [];
-    console.log(userSession.role);
 
     const searchFiles = await Files.findAll({
         where:{
