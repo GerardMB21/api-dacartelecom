@@ -78,8 +78,11 @@ const deleted = catchAsync(async (req,res,next)=>{
 
 const getItems = catchAsync(async (req,res,next)=>{
     const { userSession } = req;
+    const { offSet,limit } = req.query;
 
-    const data = await Files.findAll({
+    const data = [];
+
+    const searchFiles = await Files.findAll({
         where:{
             role: userSession.role,
             status: true
@@ -101,6 +104,12 @@ const getItems = catchAsync(async (req,res,next)=>{
                 attributes: { exclude: ['password'] }
             }
         ],
+    });
+
+    searchFiles.map(file=>{
+        if (file.id >= parseInt(offSet) && file.id <= parseInt(offSet) + parseInt(limit)) {
+            data.push(file)
+        };
     });
 
     if (!data.length) {
