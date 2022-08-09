@@ -81,6 +81,7 @@ const getItems = catchAsync(async (req,res,next)=>{
     const { offSet,limit } = req.query;
 
     const data = [];
+    console.log(userSession.role);
 
     const searchFiles = await Files.findAll({
         where:{
@@ -105,13 +106,9 @@ const getItems = catchAsync(async (req,res,next)=>{
             }
         ],
     });
-    console.log(searchFiles.length);
-    searchFiles.map(file=>{
-        console.log(file);
-    })
 
-    for (let i = offSet; i < searchFiles.length-1; i++) {
-        if (i<limit) {
+    for (let i = offSet; i < searchFiles.length; i++) {
+        if (i < limit) {
             data.push(searchFiles[i])
         };
     };
