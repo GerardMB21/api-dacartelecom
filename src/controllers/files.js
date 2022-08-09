@@ -107,7 +107,7 @@ const getItems = catchAsync(async (req,res,next)=>{
     });
 
     for (let i = offSet; i < searchFiles.length; i++) {
-        if (i < limit) {
+        if (data.length < limit) {
             data.push(searchFiles[i])
         };
     };
