@@ -106,11 +106,11 @@ const getItems = catchAsync(async (req,res,next)=>{
         ],
     });
 
-    searchFiles.map(file=>{
-        if (file.id >= parseInt(offSet) && file.id <= parseInt(offSet) + parseInt(limit)) {
-            data.push(file)
+    for (let i = offSet; i < searchFiles.length-1; i++) {
+        if (i<limit) {
+            data.push(searchFiles[i])
         };
-    });
+    };
 
     if (!data.length) {
         return next(new AppError('This area dont have files',404));
