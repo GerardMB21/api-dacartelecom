@@ -175,6 +175,52 @@ const permissionNull = catchAsync(async (req,res,next)=>{
     });
 });
 
+const getQuery = catchAsync(async (req,res,next)=>{
+    const { userSession } = req;
+    const { name } = req.query;
+
+    const data = [];
+
+    const searchFiles = await Files.findAll({
+        where:{
+            role: userSession.role,
+            status: true
+        },
+        include:[
+            {
+                model: Users,
+                required: false,
+                where:{
+                    status: true
+                },
+                include:{
+                    model: Roles,
+                    required: false,
+                    where:{
+                        status: true
+                    },
+                },
+                attributes: { exclude: ['password'] }
+            }
+        ],
+    });
+
+    searchFiles.map(file=>{
+        if (file.fileName.includes(name)) {
+            data.push(file);
+        };
+    });
+
+    if (!data.length) {
+        return next(new AppError('Not found files with name',404));
+    };
+
+    res.status(200).json({
+        status: 'success',
+        data
+    });
+});
+
 module.exports = {
     create,
     update,
@@ -182,4 +228,5 @@ module.exports = {
     getItems,
     getPermission,
     permissionNull,
+    getQuery,
 };

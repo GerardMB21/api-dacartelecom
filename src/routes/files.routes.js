@@ -1,7 +1,7 @@
 const express = require('express');
 
 //controllers
-const { create, update, deleted, getItems, getPermission, permissionNull } = require('../controllers/files');
+const { create, update, deleted, getItems, getPermission, permissionNull, getQuery } = require('../controllers/files');
 
 //middlewares
 const { uploadMiddleware, fileExist } = require('../middlewares/files');
@@ -22,5 +22,6 @@ filesRouter.delete("/delete/:fileId", verifyToken, fileExist,deleted);
 filesRouter.delete("/permission/:fileId", verifyToken, fileExist,permissionNull);
 filesRouter.get("/", verifyToken,getItems);
 filesRouter.get("/get/permission", verifyToken,getPermission);
+filesRouter.get("/get/querys", verifyToken,getQuery);
 
 module.exports = { filesRouter };
