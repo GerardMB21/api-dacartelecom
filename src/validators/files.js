@@ -1,4 +1,4 @@
-const { body, validationResult } = require('express-validator');
+const { check, body, validationResult } = require('express-validator');
 
 //utils
 const { AppError } = require('../utils/appError');
@@ -15,12 +15,11 @@ const checkResult = (req, res, next) => {
 		return next(new AppError(message, 400));
 	}
 
-	console.log('exe');
 	next();
 };
 
 const filesValidator = [
-	body('fileName').notEmpty().withMessage('Name cannot be empty'),
+	check('fileName').notEmpty().withMessage('Name cannot be empty'),
 	checkResult,
 ];
 

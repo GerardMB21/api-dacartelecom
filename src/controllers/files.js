@@ -15,7 +15,6 @@ const create = catchAsync(async (req,res,next)=>{
     const { userSession } = req;
     const { fileName } = req.body;
 
-    console.log(req);
     const ext = req.file.originalname.split('.').pop();
     const filename = `files/${userSession.role}/file-${Date.now()}.${ext}`;
     const fileRef = ref(storage,filename);

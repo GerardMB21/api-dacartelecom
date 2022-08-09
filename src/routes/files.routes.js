@@ -7,7 +7,8 @@ const { create, update, deleted, getItems, getPermission, permissionNull } = req
 const { uploadMiddleware, fileExist } = require('../middlewares/files');
 
 //validators
-const { filesValidator } = require('../validators/files');
+//genera un error al subir los archivos
+//const { filesValidator } = require('../validators/files');
 
 //utils
 const { verifyToken } = require('../utils/tokenVerify');
@@ -15,7 +16,7 @@ const { verifyToken } = require('../utils/tokenVerify');
 const filesRouter = express.Router();
 
 // htttp://localhost:port/api/v1/roles GET,POST,DELET,PUT
-filesRouter.post("/create", verifyToken, filesValidator, uploadMiddleware.single('file'),create);
+filesRouter.post("/create", verifyToken, uploadMiddleware.single('file'),create);
 filesRouter.patch("/update/:fileId", verifyToken, fileExist,update);
 filesRouter.delete("/delete/:fileId", verifyToken, fileExist,deleted);
 filesRouter.delete("/permission/:fileId", verifyToken, fileExist,permissionNull);
