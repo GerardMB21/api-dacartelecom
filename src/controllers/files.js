@@ -105,6 +105,7 @@ const getItems = catchAsync(async (req,res,next)=>{
             }
         ],
     });
+    console.log(searchFiles);
 
     for (let i = offSet; i < searchFiles.length-1; i++) {
         if (i<limit) {
