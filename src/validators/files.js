@@ -15,6 +15,7 @@ const checkResult = (req, res, next) => {
 		return next(new AppError(message, 400));
 	}
 
+	console.log('exe');
 	next();
 };
 
