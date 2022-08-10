@@ -150,8 +150,8 @@ const updatePassword = catchAsync(async (req,res,next)=>{
     const passRepeat = await bcrypt.compare(password,user.password);
 
     if (passRepeat) {
-        return next(new AppError('Password same as your previous password',404))
-    }
+        return next(new AppError('Password same as your previous password',404));
+    };
 
 	const salt = await bcrypt.genSalt(12);
 	const encryptPass = await bcrypt.hash(password,salt);
@@ -340,6 +340,10 @@ const getQuery = catchAsync(async (req,res,next)=>{
             };
         });
         users = parameters;
+    };
+
+    if (users.length) {
+        return next(new AppError('Users not found',404));
     };
 
     res.status(200).json({
