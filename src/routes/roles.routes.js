@@ -18,6 +18,6 @@ const rolesRouter = express.Router();
 rolesRouter.post("/create", verifyToken, onlyAdmin, rolesValidator,create);
 rolesRouter.patch("/update/:id", verifyToken, onlyAdmin, roleExist,update);
 rolesRouter.delete("/delete/:id", verifyToken, onlyAdmin, roleExist,deleted);
-rolesRouter.get("/", verifyToken, onlyAdmin,getItems);
+rolesRouter.get("/", verifyToken,getItems);
 
 module.exports = { rolesRouter };
