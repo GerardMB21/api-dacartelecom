@@ -342,10 +342,6 @@ const getQuery = catchAsync(async (req,res,next)=>{
         users = parameters;
     };
 
-    if (users.length) {
-        return next(new AppError('Users not found',404));
-    };
-
     res.status(200).json({
         status: 'success',
         users
