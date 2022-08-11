@@ -141,16 +141,18 @@ const updatePassword = catchAsync(async (req,res,next)=>{
         return next(new AppError('You dont have permission',403));
     };
 
-    const validPass = await bcrypt.compare(lastPassword,user.password);
+    if (userSession.role !== 'administrador') {
+        const validPass = await bcrypt.compare(lastPassword,user.password);
 
-    if (!validPass) {
-        return next(new AppError('Invalid password',404));
-    };
+        if (!validPass) {
+            return next(new AppError('Invalid password',404));
+        };
 
-    const passRepeat = await bcrypt.compare(password,user.password);
+        const passRepeat = await bcrypt.compare(password,user.password);
 
-    if (passRepeat) {
-        return next(new AppError('Password same as your previous password',404));
+        if (passRepeat) {
+            return next(new AppError('Password same as your previous password',404));
+        };
     };
 
 	const salt = await bcrypt.genSalt(12);
