@@ -6,6 +6,7 @@ const compression = require('compression');
 const morgan = require('morgan');
 const cors = require('cors');
 const app = express();
+const http = require('http');
 
 //Routers
 const { usersRouter } = require('./routes/users.routes');
@@ -66,5 +67,7 @@ app.all('*',(req,res,next)=>{
 
 app.use(globalErrorHandler);
 
-module.exports = { app };
+const server = http.createServer(app);
+
+module.exports = { server };
 
